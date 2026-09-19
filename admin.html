@@ -1,1 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen User - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; }
+    .card-custom { background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; }
+  </style>
+</head>
+<body class="p-4">
 
+  <div class="container" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="text-info m-0">Manajemen Pengguna</h4>
+      <a href="search.html" class="btn btn-outline-light btn-sm">Kembali ke Rekap</a>
+    </div>
+
+    <div class="card-custom p-3 table-responsive">
+      <table class="table table-dark table-hover align-middle small m-0">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Akses Dashboard</th>
+            <th>Akses Form Input</th>
+            <th>Akses Data Admin</th>
+            <th>Akses Kelola User</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <tr><td colspan="6" class="text-center py-3">Memuat pengguna...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
+
+    window.onload = function() {
+      fetch(`${SCRIPT_URL}?action=getUsers`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.status === "success") {
+            const body = document.getElementById('userTableBody');
+            body.innerHTML = res.data.map(u => `
+              <tr>
+                <td class="fw-bold text-info">${u.username}</td>
+                <td><span class="badge bg-secondary">${u.role}</span></td>
+                <td>${u.can_dashboard ? '✅' : '❌'}</td>
+                <td>${u.can_input ? '✅' : '❌'}</td>
+                <td>${u.can_data_admin ? '✅' : '❌'}</td>
+                <td>${u.can_manage_users ? '✅' : '❌'}</td>
+              </tr>
+            `).join('');
+          }
+        });
+    };
+  </script>
+</body>
+</html>

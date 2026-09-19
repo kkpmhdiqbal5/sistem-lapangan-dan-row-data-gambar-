@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Rekap Data Admin - Sistem Lapangan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- HTML5 QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
   <style>
     body {
       background-color: #0b132b;
@@ -101,6 +105,7 @@
             <option value="CID">CID / NAMA</option>
             <option value="ODP">ODP</option>
             <option value="POP">POP</option>
+            <option value="PERANGKAT">PERANGKAT (SN & P-SN)</option>
           </select>
         </div>
         <div class="col-md-3">
@@ -109,7 +114,10 @@
         </div>
         <div class="col-md-3">
           <label class="form-label small text-secondary fw-bold mb-1">KATA KUNCI / SCAN</label>
-          <input type="text" id="filterSearch" class="form-control form-control-dark" placeholder="Ketik CID, Nama, SN, ODP..." oninput="applyFilters()">
+          <div class="input-group input-group-sm">
+            <input type="text" id="filterSearch" class="form-control form-control-dark" placeholder="Ketik CID, Nama, SN, ODP..." oninput="applyFilters()">
+            <button type="button" class="btn btn-info text-white fw-bold" onclick="startScanner()">📷 SCAN</button>
+          </div>
         </div>
       </div>
 
@@ -140,6 +148,7 @@
             <th>ODP</th>
             <th>POP</th>
             <th>CID / NAMA</th>
+            <th>SN / P-SN</th>
             <th>PAKET</th>
             <th>NO HP</th>
             <th>SHERLOCK</th>
@@ -148,16 +157,34 @@
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="11" class="text-center py-4 text-secondary">Memuat data rekap admin...</td></tr>
+          <tr><td colspan="12" class="text-center py-4 text-secondary">Memuat data rekap admin...</td></tr>
         </tbody>
       </table>
     </div>
 
   </div>
 
+  <!-- MODAL CAMERA SCANNER BARCODE / QR -->
+  <div id="scannerModal" class="modal fade" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header border-secondary">
+          <h6 class="modal-title text-info">Arahkan Kamera ke Barcode SN / P-SN</h6>
+          <button type="button" class="btn-close btn-close-white" onclick="stopScanner()"></button>
+        </div>
+        <div class="modal-body p-2">
+          <div id="reader" style="width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlG.../exec";
     let rawDataList = [];
+    let html5QrCode = null;
 
     window.onload = function() {
       checkAuth();
@@ -171,7 +198,7 @@
     }
 
     function loadData() {
-      document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" class="text-center py-4 text-secondary">Memuat data dari Google Sheets...</td></tr>';
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" class="text-center py-4 text-secondary">Memuat data dari Google Sheets...</td></tr>';
       
       fetch(`${SCRIPT_URL}?action=getDataAdmin`)
         .then(r => r.json())
@@ -180,26 +207,46 @@
             rawDataList = res.data;
             applyFilters();
           } else {
-            document.getElementById('tableBody').innerHTML = `<tr><td colspan="11" class="text-center text-danger py-4">${res.message}</td></tr>`;
+            document.getElementById('tableBody').innerHTML = `<tr><td colspan="12" class="text-center text-danger py-4">${res.message}</td></tr>`;
           }
         })
         .catch(err => {
-          document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" class="text-center text-danger py-4">Gagal mengambil data dari server.</td></tr>';
+          document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" class="text-center text-danger py-4">Gagal mengambil data dari server.</td></tr>';
         });
     }
 
     function applyFilters() {
       const sheetVal = document.getElementById('filterSheet').value;
+      const kriteriaVal = document.getElementById('filterKriteria').value;
       const tanggalVal = document.getElementById('filterTanggal').value;
       const searchVal = document.getElementById('filterSearch').value.toLowerCase();
 
       let filtered = rawDataList.filter(row => {
         let matchSheet = (sheetVal === "ALL") || (row.sumber_sheet === sheetVal);
-        let matchSearch = !searchVal || 
-          (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) ||
-          (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal)) ||
-          (row.odp && row.odp.toLowerCase().includes(searchVal)) ||
-          (row.pop && row.pop.toLowerCase().includes(searchVal));
+        
+        let matchSearch = true;
+        if (searchVal) {
+          if (kriteriaVal === "CID") {
+            matchSearch = (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) ||
+                          (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal));
+          } else if (kriteriaVal === "ODP") {
+            matchSearch = (row.odp && row.odp.toLowerCase().includes(searchVal));
+          } else if (kriteriaVal === "POP") {
+            matchSearch = (row.pop && row.pop.toLowerCase().includes(searchVal));
+          } else if (kriteriaVal === "PERANGKAT") {
+            // KHUSUS FILTER PERANGKAT (SN & P-SN)
+            matchSearch = (row.sn && row.sn.toLowerCase().includes(searchVal)) ||
+                          (row.psn && row.psn.toLowerCase().includes(searchVal));
+          } else {
+            // SEMUA KRITERIA
+            matchSearch = (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) ||
+                          (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal)) ||
+                          (row.odp && row.odp.toLowerCase().includes(searchVal)) ||
+                          (row.pop && row.pop.toLowerCase().includes(searchVal)) ||
+                          (row.sn && row.sn.toLowerCase().includes(searchVal)) ||
+                          (row.psn && row.psn.toLowerCase().includes(searchVal));
+          }
+        }
 
         let matchTanggal = true;
         if (tanggalVal && row.timestamp) {
@@ -217,7 +264,7 @@
       const tbody = document.getElementById('tableBody');
 
       if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-secondary">Tidak ada data ditemukan.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-secondary">Tidak ada data ditemukan.</td></tr>';
         return;
       }
 
@@ -232,6 +279,10 @@
             <div class="fw-bold text-white">${row.nama_lama || '-'}</div>
             <div class="small text-secondary">CID: ${row.cid_lama || '-'}</div>
           </td>
+          <td>
+            <div class="text-success fw-bold">SN: ${row.sn || '-'}</div>
+            <div class="small text-muted">PSN: ${row.psn || '-'}</div>
+          </td>
           <td>${row.paket || '-'}</td>
           <td>${row.nohp || '-'}</td>
           <td>
@@ -241,6 +292,47 @@
           <td>${row.keterangan || '-'}</td>
         </tr>
       `).join('');
+    }
+
+    // FITUR CAMERA SCANNER BARCODE & QR CODE
+    function startScanner() {
+      const modalElem = document.getElementById('scannerModal');
+      const modal = new bootstrap.Modal(modalElem);
+      modal.show();
+
+      html5QrCode = new Html5Qrcode("reader");
+      const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        qrCodeMessage => {
+          document.getElementById('filterSearch').value = qrCodeMessage;
+          applyFilters();
+          stopScanner();
+        },
+        errorMessage => {}
+      ).catch(err => {
+        alert("Gagal mengakses kamera untuk pemindaian!");
+        stopScanner();
+      });
+    }
+
+    function stopScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear();
+          closeModal();
+        }).catch(err => closeModal());
+      } else {
+        closeModal();
+      }
+    }
+
+    function closeModal() {
+      const modalElem = document.getElementById('scannerModal');
+      const modal = bootstrap.Modal.getInstance(modalElem);
+      if (modal) modal.hide();
     }
 
     function toggleCheckAll(source) {
@@ -269,7 +361,7 @@
       selectedBoxes.forEach(box => {
         const idx = box.getAttribute('data-index');
         const item = rawDataList[idx];
-        textMsg += `📌 *${item.nama_lama}* (${item.cid_lama})\nODP: ${item.odp} | POP: ${item.pop}\n\n`;
+        textMsg += `📌 *${item.nama_lama}* (${item.cid_lama})\nODP: ${item.odp} | POP: ${item.pop}\nSN: ${item.sn || '-'}\n\n`;
       });
 
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`, '_blank');

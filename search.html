@@ -5,68 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Rekap Data Admin - Sistem Lapangan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <!-- HTML5 QR Code Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
-    body {
-      background-color: #0b132b;
-      color: #e0e6ed;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .navbar-dark-custom {
-      background-color: #1c2541;
-      border-bottom: 1px solid #2a385b;
-    }
-    .filter-card {
-      background-color: #1c2541;
-      border: 1px solid #2a385b;
-      border-radius: 8px;
-    }
-    .form-control-dark, .form-select-dark {
-      background-color: #0b132b;
-      border: 1px solid #3a506b;
-      color: #ffffff;
-      font-size: 0.85rem;
-    }
-    .form-control-dark:focus, .form-select-dark:focus {
-      background-color: #0b132b;
-      border-color: #48cae4;
-      color: #ffffff;
-      box-shadow: 0 0 0 0.2rem rgba(72, 202, 228, 0.25);
-    }
-    .table-rekap {
-      font-size: 0.8rem;
-      color: #c0c0c0;
-      vertical-align: middle;
-    }
-    .table-rekap th {
-      background-color: #1c2541;
-      color: #ffffff;
-      border-bottom: 2px solid #3a506b;
-      white-space: nowrap;
-    }
-    .table-rekap td {
-      border-bottom: 1px solid #1f2d4d;
-      white-space: nowrap;
-    }
-    .badge-sheet {
-      background-color: #1d4ed8;
-      color: #ffffff;
-      font-size: 0.7rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-    .btn-wa {
-      background-color: #25d366;
-      color: #ffffff;
-      font-weight: 600;
-    }
-    .btn-wa:hover {
-      background-color: #1eb857;
-      color: #ffffff;
-    }
+    body { background-color: #0b132b; color: #e0e6ed; font-family: 'Segoe UI', sans-serif; }
+    .navbar-dark-custom { background-color: #1c2541; border-bottom: 1px solid #2a385b; }
+    .filter-card { background-color: #1c2541; border: 1px solid #2a385b; border-radius: 8px; }
+    .form-control-dark, .form-select-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
+    .table-rekap { font-size: 0.8rem; color: #c0c0c0; vertical-align: middle; }
+    .table-rekap th { background-color: #1c2541; color: #ffffff; border-bottom: 2px solid #3a506b; white-space: nowrap; }
+    .table-rekap td { border-bottom: 1px solid #1f2d4d; white-space: nowrap; }
+    .badge-sheet { background-color: #1d4ed8; color: #ffffff; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; }
+    .btn-wa { background-color: #25d366; color: #ffffff; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -74,20 +24,17 @@
   <!-- NAVBAR UTAMA -->
   <nav class="navbar navbar-dark-custom px-3 py-2 mb-3">
     <div class="container-fluid p-0 d-flex justify-content-between align-items-center">
-      <span class="fs-5 fw-bold text-white d-flex align-items-center gap-2">
-        📊 Panel Rekap Data Admin
-      </span>
+      <span class="fs-5 fw-bold text-white">📊 Panel Rekap Data Admin</span>
       <div class="d-flex gap-2">
-        <a href="index.html" class="btn btn-outline-light btn-sm fw-bold">Form Lapangan</a>
-        <a href="admin.html" class="btn btn-primary btn-sm fw-bold">Dashboard Admin</a>
+        <a href="index.html" class="btn btn-success btn-sm fw-bold">📝 Form Lapangan</a>
+        <a href="admin.html" class="btn btn-primary btn-sm fw-bold">💻 Info Perangkat</a>
         <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
       </div>
     </div>
   </nav>
 
   <div class="container-fluid px-3">
-    
-    <!-- CARD FILTER -->
+    <!-- FILTER CARD -->
     <div class="filter-card p-3 mb-3">
       <div class="row g-2">
         <div class="col-md-3">
@@ -127,17 +74,13 @@
           <a href="#" onclick="resetFilters()" class="text-secondary ms-2 text-decoration-none">Reset Filter</a>
         </div>
         <div class="d-flex gap-2">
-          <button onclick="sendSelectedToWA()" class="btn btn-wa btn-sm px-3 d-flex align-items-center gap-1">
-            💬 Kirim Gabungan (WA)
-          </button>
-          <button onclick="loadData()" class="btn btn-primary btn-sm px-3">
-            🔄 Refresh
-          </button>
+          <button onclick="sendSelectedToWA()" class="btn btn-wa btn-sm px-3">💬 Kirim Gabungan (WA)</button>
+          <button onclick="loadData()" class="btn btn-primary btn-sm px-3">🔄 Refresh</button>
         </div>
       </div>
     </div>
 
-    <!-- TABEL REKAP DATA -->
+    <!-- TABEL DATA -->
     <div class="table-responsive">
       <table class="table table-rekap align-middle">
         <thead>
@@ -161,10 +104,9 @@
         </tbody>
       </table>
     </div>
-
   </div>
 
-  <!-- MODAL CAMERA SCANNER BARCODE / QR -->
+  <!-- MODAL SCANNER -->
   <div id="scannerModal" class="modal fade" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white">
@@ -172,46 +114,26 @@
           <h6 class="modal-title text-info">Arahkan Kamera ke Barcode SN / P-SN</h6>
           <button type="button" class="btn-close btn-close-white" onclick="stopScanner()"></button>
         </div>
-        <div class="modal-body p-2">
-          <div id="reader" style="width: 100%;"></div>
-        </div>
+        <div class="modal-body p-2"><div id="reader" style="width: 100%;"></div></div>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
-    let rawDataList = [];
-    let html5QrCode = null;
+    let rawDataList = [], html5QrCode = null;
 
-    window.onload = function() {
-      checkAuth();
-      loadData();
-    };
-
-    function checkAuth() {
-      if (!localStorage.getItem("user_session")) {
-        window.location.href = "login.html";
-      }
-    }
+    window.onload = function() { checkAuth(); loadData(); };
+    function checkAuth() { if (!localStorage.getItem("user_session")) window.location.href = "login.html"; }
 
     function loadData() {
       document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" class="text-center py-4 text-secondary">Memuat data dari Google Sheets...</td></tr>';
-      
       fetch(`${SCRIPT_URL}?action=getDataAdmin`)
         .then(r => r.json())
         .then(res => {
-          if (res.status === "success") {
-            rawDataList = res.data;
-            applyFilters();
-          } else {
-            document.getElementById('tableBody').innerHTML = `<tr><td colspan="12" class="text-center text-danger py-4">${res.message}</td></tr>`;
-          }
-        })
-        .catch(err => {
-          document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" class="text-center text-danger py-4">Gagal mengambil data dari server.</td></tr>';
+          if (res.status === "success") { rawDataList = res.data; applyFilters(); }
+          else { document.getElementById('tableBody').innerHTML = `<tr><td colspan="12" class="text-center text-danger py-4">${res.message}</td></tr>`; }
         });
     }
 
@@ -223,51 +145,24 @@
 
       let filtered = rawDataList.filter(row => {
         let matchSheet = (sheetVal === "ALL") || (row.sumber_sheet === sheetVal);
-        
         let matchSearch = true;
         if (searchVal) {
-          if (kriteriaVal === "CID") {
-            matchSearch = (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) ||
-                          (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal));
-          } else if (kriteriaVal === "ODP") {
-            matchSearch = (row.odp && row.odp.toLowerCase().includes(searchVal));
-          } else if (kriteriaVal === "POP") {
-            matchSearch = (row.pop && row.pop.toLowerCase().includes(searchVal));
-          } else if (kriteriaVal === "PERANGKAT") {
-            // KHUSUS FILTER PERANGKAT (SN & P-SN)
-            matchSearch = (row.sn && row.sn.toLowerCase().includes(searchVal)) ||
-                          (row.psn && row.psn.toLowerCase().includes(searchVal));
-          } else {
-            // SEMUA KRITERIA
-            matchSearch = (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) ||
-                          (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal)) ||
-                          (row.odp && row.odp.toLowerCase().includes(searchVal)) ||
-                          (row.pop && row.pop.toLowerCase().includes(searchVal)) ||
-                          (row.sn && row.sn.toLowerCase().includes(searchVal)) ||
-                          (row.psn && row.psn.toLowerCase().includes(searchVal));
-          }
+          if (kriteriaVal === "CID") matchSearch = (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) || (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal));
+          else if (kriteriaVal === "ODP") matchSearch = (row.odp && row.odp.toLowerCase().includes(searchVal));
+          else if (kriteriaVal === "POP") matchSearch = (row.pop && row.pop.toLowerCase().includes(searchVal));
+          else if (kriteriaVal === "PERANGKAT") matchSearch = (row.sn && row.sn.toLowerCase().includes(searchVal)) || (row.psn && row.psn.toLowerCase().includes(searchVal));
+          else matchSearch = (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) || (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal)) || (row.odp && row.odp.toLowerCase().includes(searchVal)) || (row.pop && row.pop.toLowerCase().includes(searchVal)) || (row.sn && row.sn.toLowerCase().includes(searchVal)) || (row.psn && row.psn.toLowerCase().includes(searchVal));
         }
-
-        let matchTanggal = true;
-        if (tanggalVal && row.timestamp) {
-          matchTanggal = row.timestamp.startsWith(tanggalVal);
-        }
-
+        let matchTanggal = !tanggalVal || (row.timestamp && row.timestamp.startsWith(tanggalVal));
         return matchSheet && matchSearch && matchTanggal;
       });
-
       renderTable(filtered);
     }
 
     function renderTable(data) {
       document.getElementById('totalDataCount').innerText = data.length;
       const tbody = document.getElementById('tableBody');
-
-      if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-secondary">Tidak ada data ditemukan.</td></tr>';
-        return;
-      }
-
+      if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-secondary">Tidak ada data ditemukan.</td></tr>'; return; }
       tbody.innerHTML = data.map((row, index) => `
         <tr>
           <td><input type="checkbox" class="row-checkbox" data-index="${index}"></td>
@@ -275,102 +170,60 @@
           <td>${row.timestamp || '-'}</td>
           <td class="text-info fw-bold">${row.odp || '-'}</td>
           <td>${row.pop || '-'}</td>
-          <td>
-            <div class="fw-bold text-white">${row.nama_lama || '-'}</div>
-            <div class="small text-secondary">CID: ${row.cid_lama || '-'}</div>
-          </td>
-          <td>
-            <div class="text-success fw-bold">SN: ${row.sn || '-'}</div>
-            <div class="small text-muted">PSN: ${row.psn || '-'}</div>
-          </td>
+          <td><div class="fw-bold text-white">${row.nama_lama || '-'}</div><div class="small text-secondary">CID: ${row.cid_lama || '-'}</div></td>
+          <td><div class="text-success fw-bold">SN: ${row.sn || '-'}</div><div class="small text-muted">PSN: ${row.psn || '-'}</div></td>
           <td>${row.paket || '-'}</td>
           <td>${row.nohp || '-'}</td>
-          <td>
-            ${row.sherlock ? `<a href="https://www.google.com/maps?q=${row.sherlock}" target="_blank" class="text-info text-decoration-none">📍 Maps</a>` : '-'}
-          </td>
+          <td>${row.sherlock ? `<a href="https://www.google.com/maps?q=${row.sherlock}" target="_blank" class="text-info text-decoration-none">📍 Maps</a>` : '-'}</td>
           <td>${row.sales || '-'}</td>
           <td>${row.keterangan || '-'}</td>
         </tr>
       `).join('');
     }
 
-    // FITUR CAMERA SCANNER BARCODE & QR CODE
     function startScanner() {
-      const modalElem = document.getElementById('scannerModal');
-      const modal = new bootstrap.Modal(modalElem);
-      modal.show();
-
+      const modal = new bootstrap.Modal(document.getElementById('scannerModal')); modal.show();
       html5QrCode = new Html5Qrcode("reader");
-      const config = { fps: 10, qrbox: { width: 250, height: 150 } };
-
-      html5QrCode.start(
-        { facingMode: "environment" },
-        config,
-        qrCodeMessage => {
-          document.getElementById('filterSearch').value = qrCodeMessage;
-          applyFilters();
-          stopScanner();
-        },
-        errorMessage => {}
-      ).catch(err => {
-        alert("Gagal mengakses kamera untuk pemindaian!");
-        stopScanner();
+      html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } }, msg => {
+        document.getElementById('filterSearch').value = msg; applyFilters(); stopScanner();
       });
     }
 
     function stopScanner() {
-      if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-          html5QrCode.clear();
-          closeModal();
-        }).catch(err => closeModal());
-      } else {
-        closeModal();
-      }
+      if (html5QrCode) html5QrCode.stop().then(() => { html5QrCode.clear(); closeModal(); }); else closeModal();
     }
+    function closeModal() { const modal = bootstrap.Modal.getInstance(document.getElementById('scannerModal')); if (modal) modal.hide(); }
+    function toggleCheckAll(src) { checkboxes = document.getElementsByClassName('row-checkbox'); for (var i = 0; i < checkboxes.length; i++) checkboxes[i].checked = src.checked; }
+    function resetFilters() { document.getElementById('filterSheet').value = "ALL"; document.getElementById('filterKriteria').value = "ALL"; document.getElementById('filterTanggal').value = ""; document.getElementById('filterSearch').value = ""; applyFilters(); }
 
-    function closeModal() {
-      const modalElem = document.getElementById('scannerModal');
-      const modal = bootstrap.Modal.getInstance(modalElem);
-      if (modal) modal.hide();
-    }
-
-    function toggleCheckAll(source) {
-      checkboxes = document.getElementsByClassName('row-checkbox');
-      for (var i = 0, n = checkboxes.length; i < n; i++) {
-        checkboxes[i].checked = source.checked;
-      }
-    }
-
-    function resetFilters() {
-      document.getElementById('filterSheet').value = "ALL";
-      document.getElementById('filterKriteria').value = "ALL";
-      document.getElementById('filterTanggal').value = "";
-      document.getElementById('filterSearch').value = "";
-      applyFilters();
-    }
-
+    // TEMPLAT WHATSAPP SESUAI PERMINTAAN
     function sendSelectedToWA() {
       const selectedBoxes = document.querySelectorAll('.row-checkbox:checked');
-      if (selectedBoxes.length === 0) {
-        alert("Pilih setidaknya satu baris data untuk dikirim ke WA!");
-        return;
-      }
+      if (selectedBoxes.length === 0) { alert("Pilih setidaknya satu baris data!"); return; }
+      
+      let textMsg = `📋 *REKAP GABUNGAN (${selectedBoxes.length} DATA LAPANGAN)*\n`;
+      textMsg += `====================================\n\n`;
 
-      let textMsg = "*REKAP DATA KLIEN*\n\n";
-      selectedBoxes.forEach(box => {
-        const idx = box.getAttribute('data-index');
-        const item = rawDataList[idx];
-        textMsg += `📌 *${item.nama_lama}* (${item.cid_lama})\nODP: ${item.odp} | POP: ${item.pop}\nSN: ${item.sn || '-'}\n\n`;
+      selectedBoxes.forEach((box, index) => {
+        const item = rawDataList[box.getAttribute('data-index')];
+        let noUrut = index + 1;
+        
+        textMsg += `*${noUrut}. ${item.nama_lama || '-'}*\n`;
+        textMsg += `* ODP: ${item.odp || '-'}\n`;
+        textMsg += `* POP: ${item.pop || '-'}\n`;
+        textMsg += `* CID: ${item.cid_lama || '-'}\n`;
+        textMsg += `* SN: ${item.sn || '-'}\n`;
+        textMsg += `* Sheet: ${item.sheet_asal || 'Baris 1'}\n`;
+        textMsg += `* Ket: ${item.keterangan || '-'}\n`;
+        textMsg += `📍 Sherlock: ${item.sherlock ? 'https://www.google.com/maps?q=' + item.sherlock : '-'}\n`;
+        textMsg += `🖼️ Foto Rumah: ${item.foto_rumah_url || '-'}\n`;
+        textMsg += `🖼️ Foto Alat: ${item.foto_alat_url || '-'}\n\n`;
       });
 
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`, '_blank');
     }
 
-    function logout() {
-      localStorage.removeItem("user_session");
-      window.location.href = "login.html";
-    }
+    function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
   </script>
 </body>
 </html>

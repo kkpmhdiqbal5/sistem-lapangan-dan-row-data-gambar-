@@ -3,113 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manajemen User - Admin</title>
+  <title>Info Perangkat - Sistem Lapangan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #0f172a;
-      color: #e2e8f0;
+      background-color: #f1f5f9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding-bottom: 70px;
+    }
+    .top-bar {
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
     }
     .card-custom {
-      background-color: #1e293b;
-      border: 1px solid #334155;
+      background-color: #ffffff;
       border-radius: 8px;
+      border: 1px solid #e2e8f0;
     }
-    .table-dark-custom {
-      background-color: #1e293b;
-      color: #e2e8f0;
+    .card-header-dark {
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 10px 15px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
     }
-    .table-dark-custom th {
-      background-color: #334155;
+    .table-custom {
+      font-size: 0.75rem;
+      vertical-align: middle;
+    }
+    .table-custom th {
+      background-color: #0f172a;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #0f172a;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      border-top: 1px solid #1e293b;
+      z-index: 1000;
+    }
+    .nav-item-custom {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    .nav-item-custom.active {
       color: #38bdf8;
+      font-weight: bold;
+    }
+    .nav-item-custom div {
+      font-size: 1rem;
     }
   </style>
 </head>
-<body class="p-3 p-md-4">
+<body>
 
-  <!-- SCRIPT PROTEKSI SESSION (Harus berjalan paling awal sebelum render body) -->
-  <script>
-    (function checkAuth() {
-      const sessionData = localStorage.getItem("user_session");
-      if (!sessionData) {
-        alert("Akses Ditolak! Silakan login terlebih dahulu.");
-        window.location.href = "login.html";
-      }
-    })();
-  </script>
+  <!-- TOP BAR -->
+  <div class="top-bar d-flex justify-content-between align-items-center">
+    <div class="fw-bold fs-6">💻 Info Perangkat</div>
+    <span class="badge bg-success">● Admin Online</span>
+  </div>
 
-  <div class="container" style="max-width: 960px;">
-    <!-- HEADER & NAVIGASI ADMIN -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-      <div>
-        <h4 class="text-info m-0 fw-bold">👥 Manajemen Pengguna & Hak Akses</h4>
-        <small class="text-muted">Logged in as: <strong id="currentUser" class="text-white">-</strong></small>
+  <div class="container my-3" style="max-width: 1000px;">
+    
+    <!-- CARD PENCARIAN -->
+    <div class="card-custom p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h6 class="fw-bold m-0 text-primary">⚙ Data Info Perangkat Lapangan</h6>
+          <small class="text-muted">Filter cepat berdasarkan Nama, CID, ODP, SN, PSN, atau POP</small>
+        </div>
+        <button onclick="loadPerangkatData()" class="btn btn-emerald btn-sm bg-emerald text-white fw-bold" style="background-color: #10b981;">
+          🔄 Muat Data
+        </button>
       </div>
-      <div class="d-flex gap-2">
-        <a href="search.html" class="btn btn-outline-info btn-sm">📋 Rekap Data</a>
-        <a href="index.html" class="btn btn-outline-light btn-sm">📝 Form Lapangan</a>
-        <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">Logout 🚪</button>
+      <input type="text" id="searchPerangkat" class="form-control form-control-sm" placeholder="Ketik kata kunci pencarian..." oninput="filterPerangkat()">
+    </div>
+
+    <!-- TABEL DAFTAR PERANGKAT TERDATA -->
+    <div class="card-custom">
+      <div class="card-header-dark d-flex justify-content-between align-items-center">
+        <span class="fw-bold small">🗄 Daftar Perangkat Terdata</span>
+        <span id="badgeTotal" class="badge bg-info text-dark fw-bold">0 Data</span>
+      </div>
+      <div class="table-responsive p-2" style="max-height: 420px; overflow-y: auto;">
+        <table class="table table-bordered table-custom m-0 align-middle text-center">
+          <thead>
+            <tr>
+              <th>WAKTU</th>
+              <th>POP</th>
+              <th>ODP</th>
+              <th>CID LAMA</th>
+              <th>NAMA LAMA</th>
+              <th>SN UNIT</th>
+              <th>P-SN</th>
+              <th>FOTO RUMAH</th>
+              <th>FOTO ALAT</th>
+              <th>LOKASI</th>
+              <th>KET</th>
+            </tr>
+          </thead>
+          <tbody id="perangkatTableBody">
+            <tr><td colspan="11" class="py-4 text-muted">Memuat data dari Google Sheets...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- TABEL MANAJEMEN USER -->
-    <div class="card-custom p-3 table-responsive">
-      <table class="table table-dark-custom table-hover align-middle small m-0">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Akses Dashboard</th>
-            <th>Akses Form Input</th>
-            <th>Akses Data Admin</th>
-            <th>Akses Manage Users</th>
-          </tr>
-        </thead>
-        <tbody id="userTableBody">
-          <tr><td colspan="6" class="text-center py-4 text-muted">Memuat data akun pengguna...</td></tr>
-        </tbody>
-      </table>
-    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <div class="bottom-nav">
+    <a href="search.html" class="nav-item-custom">
+      <div>🔍</div>
+      <span>Sistem Cari</span>
+    </a>
+    <a href="admin.html" class="nav-item-custom active">
+      <div>💻</div>
+      <span>Info Perangkat</span>
+    </a>
+    <a href="index.html" class="nav-item-custom">
+      <div>📝</div>
+      <span>Lapangan</span>
+    </a>
+    <a href="#" onclick="logout()" class="nav-item-custom">
+      <div>👤</div>
+      <span>Profil/Keluar</span>
+    </a>
   </div>
 
   <script>
-    // URL Web App Google Apps Script Anda
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlG.../exec";
+    let listPerangkat = [];
 
     window.onload = function() {
-      const session = JSON.parse(localStorage.getItem("user_session") || "{}");
-      if (session.username) {
-        document.getElementById("currentUser").innerText = `${session.username} (${session.role})`;
-      }
-      loadUsers();
+      checkAuth();
+      loadPerangkatData();
     };
 
-    function loadUsers() {
-      fetch(`${SCRIPT_URL}?action=getUsers`)
+    function checkAuth() {
+      if (!localStorage.getItem("user_session")) {
+        window.location.href = "login.html";
+      }
+    }
+
+    function loadPerangkatData() {
+      const tbody = document.getElementById('perangkatTableBody');
+      tbody.innerHTML = '<tr><td colspan="11" class="py-4 text-muted">🔄 Memuat data dari Google Sheets...</td></tr>';
+
+      fetch(`${SCRIPT_URL}?action=getInfoPerangkat`)
         .then(r => r.json())
         .then(res => {
           if (res.status === "success") {
-            const body = document.getElementById('userTableBody');
-            if (!res.data || res.data.length === 0) {
-              body.innerHTML = '<tr><td colspan="6" class="text-center py-3">Tidak ada data akun.</td></tr>';
-              return;
-            }
-            body.innerHTML = res.data.map(u => `
-              <tr>
-                <td class="fw-bold text-info">${u.username}</td>
-                <td><span class="badge bg-secondary">${u.role}</span></td>
-                <td>${u.can_dashboard ? '✅' : '❌'}</td>
-                <td>${u.can_input ? '✅' : '❌'}</td>
-                <td>${u.can_data_admin ? '✅' : '❌'}</td>
-                <td>${u.can_manage_users ? '✅' : '❌'}</td>
-              </tr>
-            `).join('');
+            listPerangkat = res.data;
+            renderPerangkat(listPerangkat);
+          } else {
+            tbody.innerHTML = `<tr><td colspan="11" class="text-danger py-4">${res.message}</td></tr>`;
           }
         })
         .catch(err => {
-          document.getElementById('userTableBody').innerHTML = '<tr><td colspan="6" class="text-center text-danger py-3">Gagal mengambil data pengguna!</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="11" class="text-danger py-4">Gagal terhubung ke Google Sheets.</td></tr>';
         });
+    }
+
+    function filterPerangkat() {
+      const q = document.getElementById('searchPerangkat').value.toLowerCase();
+      const filtered = listPerangkat.filter(item => 
+        (item.nama_lama && item.nama_lama.toLowerCase().includes(q)) ||
+        (item.cid_lama && item.cid_lama.toLowerCase().includes(q)) ||
+        (item.sn && item.sn.toLowerCase().includes(q)) ||
+        (item.psn && item.psn.toLowerCase().includes(q)) ||
+        (item.odp && item.odp.toLowerCase().includes(q))
+      );
+      renderPerangkat(filtered);
+    }
+
+    function renderPerangkat(data) {
+      document.getElementById('badgeTotal').innerText = `${data.length} Data`;
+      const tbody = document.getElementById('perangkatTableBody');
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" class="py-4 text-muted">Data tidak ditemukan.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(item => `
+        <tr>
+          <td>${item.timestamp || '-'}</td>
+          <td>${item.pop || '-'}</td>
+          <td class="fw-bold text-primary">${item.odp || '-'}</td>
+          <td>${item.cid_lama || '-'}</td>
+          <td class="fw-bold">${item.nama_lama || '-'}</td>
+          <td class="text-success fw-bold">${item.sn || '-'}</td>
+          <td>${item.psn || '-'}</td>
+          <td>${item.foto_rumah_url ? `<a href="${item.foto_rumah_url}" target="_blank" class="badge bg-primary text-decoration-none">Lihat</a>` : '-'}</td>
+          <td>${item.foto_alat_url ? `<a href="${item.foto_alat_url}" target="_blank" class="badge bg-info text-decoration-none">Lihat</a>` : '-'}</td>
+          <td>${item.sherlock ? `<a href="https://www.google.com/maps?q=${item.sherlock}" target="_blank">📍 Maps</a>` : '-'}</td>
+          <td>${item.keterangan || '-'}</td>
+        </tr>
+      `).join('');
     }
 
     function logout() {

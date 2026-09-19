@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Lapangan - Form Input</title>
+  <title>Sistem Lapangan - Form Input & Scan</title>
   
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   
-  <!-- Leaflet CSS (Untuk Peta Peta Satelit / Presisi) -->
+  <!-- Leaflet CSS (Peta Satelit / Lokasi Presisi) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
-  <!-- HTML5 QR Code Scanner -->
+  <!-- HTML5 QR Code Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
@@ -56,6 +56,12 @@
       font-weight: 600;
       color: #d97706;
     }
+    .img-preview-thumb {
+      max-height: 80px;
+      border-radius: 6px;
+      border: 1px solid #0284c7;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -66,7 +72,6 @@
       <span class="fs-5 fw-bold text-dark me-2">🌐 Sistem Lapangan</span>
     </div>
     <div>
-      <!-- Tombol Dashboard Admin dengan Proteksi Login -->
       <button onclick="goToAdminDashboard()" class="btn btn-admin btn-sm px-3 py-2">
         👤 Dashboard Admin
       </button>
@@ -86,13 +91,14 @@
       </div>
 
       <div class="p-3">
+        <!-- RENDER PETA GPS -->
         <div id="map" class="mb-3"></div>
 
         <form id="fieldForm">
           <!-- KOORDINAT SHERLOCK -->
           <div class="mb-3">
             <label class="form-label small fw-bold text-secondary mb-1">KOORDINAT TERDETEKSI OTOMATIS (SHERLOCK)</label>
-            <input type="text" id="koordinat" name="koordinat" class="form-control bg-light" readonly placeholder="Mendeteksi posisi...">
+            <input type="text" id="koordinat" name="koordinat" class="form-control bg-light" readonly placeholder="Mendeteksi posisi GPS..." required>
           </div>
 
           <!-- ODP -->
@@ -101,14 +107,13 @@
             <input type="text" id="odp" name="odp" class="form-control" placeholder="Pilih ODP atau ketik baru" required>
           </div>
 
-          <!-- POP -->
+          <!-- POP (DIPERBARUI: HANYA PERBAUNGAN & PANTAI CERMIN) -->
           <div class="mb-3">
             <label class="form-label small fw-bold text-secondary mb-1">POP *</label>
             <select id="pop" name="pop" class="form-select" required>
               <option value="" selected disabled>-- Pilih POP --</option>
               <option value="PERBAUNGAN">PERBAUNGAN</option>
-              <option value="SEI RAMPAH">SEI RAMPAH</option>
-              <option value="LUBUK PAKAM">LUBUK PAKAM</option>
+              <option value="PANTAI CERMIN">PANTAI CERMIN</option>
             </select>
           </div>
 
@@ -116,43 +121,53 @@
           <div class="row g-2 mb-3">
             <div class="col-md-6">
               <label class="form-label small fw-bold text-secondary mb-1">CID LAMA *</label>
-              <input type="text" id="cid_lama" name="cid_lama" class="form-control" placeholder="Ex: CID10" required>
+              <input type="text" id="cid_lama" name="cid_lama" class="form-control" placeholder="Ex: 266170665829" required>
             </div>
             <div class="col-md-6">
               <label class="form-label small fw-bold text-secondary mb-1">NAMA LAMA *</label>
-              <input type="text" id="nama_lama" name="nama_lama" class="form-control" placeholder="Ex: Budiman" required>
+              <input type="text" id="nama_lama" name="nama_lama" class="form-control" placeholder="Ex: Nafisa Aurellia" required>
             </div>
           </div>
 
-          <!-- FOTO RUMAH -->
+          <!-- FITUR AKTIF: FOTO RUMAH -->
           <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <label class="form-label small fw-bold text-secondary m-0">FOTO RUMAH *</label>
               <span id="statusFotoRumah" class="preview-badge">BELUM ADA FOTO</span>
             </div>
-            <div class="d-flex gap-2">
-              <input type="file" id="inputFotoRumah" accept="image/*" capture="environment" class="d-none" onchange="handleImageUpload(this, 'statusFotoRumah', 'foto_rumah_url')">
-              <button type="button" onclick="document.getElementById('inputFotoRumah').click()" class="btn btn-primary btn-sm px-3">📷 Buka Kamera Web</button>
-              <button type="button" onclick="document.getElementById('inputFotoRumah').click()" class="btn btn-dark btn-sm px-3">📂 Pilih dari Galeri</button>
+            <div class="d-flex gap-2 align-items-center">
+              <input type="file" id="inputFotoRumahCam" accept="image/*" capture="environment" class="d-none" onchange="handleImageUpload(this, 'statusFotoRumah', 'foto_rumah_url', 'thumbFotoRumah')">
+              <input type="file" id="inputFotoRumahGal" accept="image/*" class="d-none" onchange="handleImageUpload(this, 'statusFotoRumah', 'foto_rumah_url', 'thumbFotoRumah')">
+              
+              <button type="button" onclick="document.getElementById('inputFotoRumahCam').click()" class="btn btn-primary btn-sm px-3">📷 Buka Kamera Web</button>
+              <button type="button" onclick="document.getElementById('inputFotoRumahGal').click()" class="btn btn-dark btn-sm px-3">📂 Pilih dari Galeri</button>
             </div>
-            <input type="hidden" id="foto_rumah_url" name="foto_rumah_url">
+            <div class="mt-2">
+              <img id="thumbFotoRumah" class="img-preview-thumb d-none" alt="Preview Rumah">
+            </div>
+            <input type="hidden" id="foto_rumah_url" name="foto_rumah_url" required>
           </div>
 
-          <!-- FOTO ALAT -->
+          <!-- FITUR AKTIF: FOTO ALAT -->
           <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <label class="form-label small fw-bold text-secondary m-0">FOTO ALAT *</label>
               <span id="statusFotoAlat" class="preview-badge">BELUM ADA FOTO</span>
             </div>
-            <div class="d-flex gap-2">
-              <input type="file" id="inputFotoAlat" accept="image/*" capture="environment" class="d-none" onchange="handleImageUpload(this, 'statusFotoAlat', 'foto_alat_url')">
-              <button type="button" onclick="document.getElementById('inputFotoAlat').click()" class="btn btn-primary btn-sm px-3">📷 Buka Kamera Web</button>
-              <button type="button" onclick="document.getElementById('inputFotoAlat').click()" class="btn btn-dark btn-sm px-3">📂 Pilih dari Galeri</button>
+            <div class="d-flex gap-2 align-items-center">
+              <input type="file" id="inputFotoAlatCam" accept="image/*" capture="environment" class="d-none" onchange="handleImageUpload(this, 'statusFotoAlat', 'foto_alat_url', 'thumbFotoAlat')">
+              <input type="file" id="inputFotoAlatGal" accept="image/*" class="d-none" onchange="handleImageUpload(this, 'statusFotoAlat', 'foto_alat_url', 'thumbFotoAlat')">
+              
+              <button type="button" onclick="document.getElementById('inputFotoAlatCam').click()" class="btn btn-primary btn-sm px-3">📷 Buka Kamera Web</button>
+              <button type="button" onclick="document.getElementById('inputFotoAlatGal').click()" class="btn btn-dark btn-sm px-3">📂 Pilih dari Galeri</button>
             </div>
-            <input type="hidden" id="foto_alat_url" name="foto_alat_url">
+            <div class="mt-2">
+              <img id="thumbFotoAlat" class="img-preview-thumb d-none" alt="Preview Alat">
+            </div>
+            <input type="hidden" id="foto_alat_url" name="foto_alat_url" required>
           </div>
 
-          <!-- SERIAL NUMBER (SN) UNIT & P-SN -->
+          <!-- FITUR AKTIF: SERIAL NUMBER (SN) UNIT & P-SN WITH SCANNER -->
           <div class="row g-2 mb-3">
             <div class="col-md-6">
               <label class="form-label small fw-bold text-secondary mb-1">SERIAL NUMBER (SN) UNIT *</label>
@@ -176,7 +191,7 @@
             <textarea id="keterangan" name="keterangan" class="form-control" rows="3" placeholder="Catatan kendala lapangan jika ada.."></textarea>
           </div>
 
-          <!-- TOMBOL SUBMIT -->
+          <!-- SUBMIT -->
           <button type="submit" id="btnSubmit" class="btn btn-dark w-100 fw-bold py-2">
             Kirim Data Lapangan
           </button>
@@ -186,26 +201,27 @@
     </div>
   </div>
 
-  <!-- MODAL CAMERA SCANNER BARCODE -->
-  <div id="scannerModal" class="modal fade" tabindex="-1">
+  <!-- MODAL LIVE CAMERA SCANNER BARCODE / QR -->
+  <div id="scannerModal" class="modal fade" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white">
         <div class="modal-header border-secondary">
           <h6 class="modal-title text-info">Arahkan Kamera ke Barcode / SN</h6>
           <button type="button" class="btn-close btn-close-white" onclick="stopScanner()"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body p-2">
           <div id="reader" style="width: 100%;"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Leaflet JS -->
+  <!-- Scripts Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // URL WEB APP GOOGLE APPS SCRIPT
+    // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
 
     let map, marker, activeScanTarget = null, html5QrCode = null;
@@ -215,18 +231,18 @@
       getLocation();
     };
 
-    // 1. CEK AKSER / LOGIN DASHBOARD ADMIN
+    // 1. PROTEKSI DITINGKATKAN UNTUK DASHBOARD ADMIN
     function goToAdminDashboard() {
       const userSession = localStorage.getItem("user_session");
       if (!userSession) {
-        alert("Anda harus login terlebih dahulu untuk mengakses Dashboard Admin!");
+        alert("Akses Terkunci! Silakan login terlebih dahulu.");
         window.location.href = "login.html";
       } else {
-        window.location.href = "search.html"; // Atau admin.html sesuai role
+        window.location.href = "search.html";
       }
     }
 
-    // 2. INISIALISASI PETA LEAFLET
+    // 2. PETA LEAFLET REAL-TIME GPS
     function initMap() {
       map = L.map('map').setView([3.5884, 98.6697], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -235,7 +251,7 @@
       }).addTo(map);
 
       marker = L.marker([3.5884, 98.6697]).addTo(map)
-        .bindPopup('Lokasi Presisi Anda').openPopup();
+        .bindPopup('Mendeteksi Posisi...').openPopup();
     }
 
     function getLocation() {
@@ -247,63 +263,92 @@
           
           document.getElementById('koordinat').value = coords;
           map.setView([lat, lng], 16);
-          marker.setLatLng([lat, lng]).setPopupContent(`Lokasi Presisi Anda:<br>${coords}`).openPopup();
+          marker.setLatLng([lat, lng]).setPopupContent(`Posisi Presisi Anda:<br><b>${coords}</b>`).openPopup();
         }, () => {
-          alert("Gagal mendeteksi lokasi otomatis. Pastikan GPS aktif!");
+          alert("Gagal mendeteksi lokasi presisi GPS! Silakan izinkan akses lokasi di browser.");
         });
       }
     }
 
-    // 3. HANDLER UNTUK UPLOAD GAMBAR DARI KAMERA/GALERI
-    function handleImageUpload(input, statusId, hiddenInputId) {
+    // 3. FITUR AKTIF: HANDLER FOTO & PREVIEW REAL-TIME
+    function handleImageUpload(input, statusId, hiddenInputId, thumbId) {
       if (input.files && input.files[0]) {
         const file = input.files[0];
         const reader = new FileReader();
+        
         reader.onload = function(e) {
-          document.getElementById(hiddenInputId).value = e.target.result; // Base64
+          const base64Data = e.target.result;
+          document.getElementById(hiddenInputId).value = base64Data;
+          
           const statusElem = document.getElementById(statusId);
-          statusElem.innerText = "✓ FOTO TERPILIH (" + (file.size / 1024).toFixed(0) + " KB)";
-          statusElem.classList.remove('preview-badge');
-          statusElem.classList.add('text-success', 'fw-bold');
+          statusElem.innerText = "✓ FOTO TERAMBIL (" + (file.size / 1024).toFixed(0) + " KB)";
+          statusElem.className = "text-success fw-bold small";
+
+          const thumbElem = document.getElementById(thumbId);
+          thumbElem.src = base64Data;
+          thumbElem.classList.remove('d-none');
         };
+        
         reader.readAsDataURL(file);
       }
     }
 
-    // 4. BARCODE & QR SCANNER
+    // 4. FITUR AKTIF: CAMERA SCANNER BARCODE / QR FOR SN & P-SN
     function startScanner(targetId) {
       activeScanTarget = targetId;
-      const modal = new bootstrap.Modal(document.getElementById('scannerModal'));
+      const modalElem = document.getElementById('scannerModal');
+      const modal = new bootstrap.Modal(modalElem);
       modal.show();
 
       html5QrCode = new Html5Qrcode("reader");
+      const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+
       html5QrCode.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
+        config,
         qrCodeMessage => {
           document.getElementById(activeScanTarget).value = qrCodeMessage;
           stopScanner();
         },
         errorMessage => {}
-      );
+      ).catch(err => {
+        alert("Kamera tidak dapat diakses untuk scan barcode!");
+        stopScanner();
+      });
     }
 
     function stopScanner() {
       if (html5QrCode) {
         html5QrCode.stop().then(() => {
-          const modalElem = document.getElementById('scannerModal');
-          const modal = bootstrap.Modal.getInstance(modalElem);
-          if (modal) modal.hide();
-        });
+          html5QrCode.clear();
+          closeModal();
+        }).catch(err => closeModal());
+      } else {
+        closeModal();
       }
     }
 
-    // 5. SUBMIT FORM KE GOOGLE APPS SCRIPT
+    function closeModal() {
+      const modalElem = document.getElementById('scannerModal');
+      const modal = bootstrap.Modal.getInstance(modalElem);
+      if (modal) modal.hide();
+    }
+
+    // 5. SUBMIT FORM DATA LAPANGAN KE GOOGLE APPS SCRIPT
     document.getElementById('fieldForm').addEventListener('submit', function(e) {
       e.preventDefault();
+      
+      const fotoRumah = document.getElementById('foto_rumah_url').value;
+      const fotoAlat = document.getElementById('foto_alat_url').value;
+
+      if(!fotoRumah || !fotoAlat) {
+        alert("Harap lengkapi Foto Rumah dan Foto Alat terlebih dahulu!");
+        return;
+      }
+
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
-      btn.innerText = "Mengirim Data Lapangan...";
+      btn.innerText = "Mengirim Data & Mengunggah Foto...";
 
       const formData = new FormData(this);
       const data = {};
@@ -316,17 +361,24 @@
       .then(r => r.json())
       .then(res => {
         if(res.status === "success") {
-          alert("Data Lapangan Berhasil Terkirim!");
+          alert("✅ Data Lapangan Berhasil Diterima & Disimpan ke Sheet Baris 1!");
           this.reset();
+          
+          // Reset Status Foto
           document.getElementById('statusFotoRumah').innerText = "BELUM ADA FOTO";
           document.getElementById('statusFotoRumah').className = "preview-badge";
+          document.getElementById('thumbFotoRumah').classList.add('d-none');
+          
           document.getElementById('statusFotoAlat').innerText = "BELUM ADA FOTO";
           document.getElementById('statusFotoAlat').className = "preview-badge";
+          document.getElementById('thumbFotoAlat').classList.add('d-none');
+          
+          getLocation(); // Refresh Lokasi GPS
         } else {
-          alert("Gagal mengirim data: " + res.message);
+          alert("Gagal menyimpan data: " + res.message);
         }
       })
-      .catch(err => alert("Terjadi kesalahan koneksi!"))
+      .catch(err => alert("Terjadi kesalahan koneksi saat mengirim data!"))
       .finally(() => {
         btn.disabled = false;
         btn.innerText = "Kirim Data Lapangan";

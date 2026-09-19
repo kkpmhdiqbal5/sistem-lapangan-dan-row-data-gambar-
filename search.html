@@ -3,277 +3,281 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Rekap Data & Info Perangkat</title>
+  <title>Panel Rekap Data Admin - Sistem Lapangan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
-    body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; }
-    .card-custom { background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; }
-    .table-dark-custom { background-color: #161b22; color: #c9d1d9; border-color: #30363d; }
-    .table-dark-custom th { background-color: #21262d; color: #58a6ff; }
-    .nav-tabs .nav-link { color: #8b949e; border: none; }
-    .nav-tabs .nav-link.active { color: #58a6ff; background-color: #161b22; border-bottom: 2px solid #58a6ff; }
-    .img-preview { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+    body {
+      background-color: #0b132b;
+      color: #e0e6ed;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar-dark-custom {
+      background-color: #1c2541;
+      border-bottom: 1px solid #2a385b;
+    }
+    .filter-card {
+      background-color: #1c2541;
+      border: 1px solid #2a385b;
+      border-radius: 8px;
+    }
+    .form-control-dark, .form-select-dark {
+      background-color: #0b132b;
+      border: 1px solid #3a506b;
+      color: #ffffff;
+      font-size: 0.85rem;
+    }
+    .form-control-dark:focus, .form-select-dark:focus {
+      background-color: #0b132b;
+      border-color: #48cae4;
+      color: #ffffff;
+      box-shadow: 0 0 0 0.2rem rgba(72, 202, 228, 0.25);
+    }
+    .table-rekap {
+      font-size: 0.8rem;
+      color: #c0c0c0;
+      vertical-align: middle;
+    }
+    .table-rekap th {
+      background-color: #1c2541;
+      color: #ffffff;
+      border-bottom: 2px solid #3a506b;
+      white-space: nowrap;
+    }
+    .table-rekap td {
+      border-bottom: 1px solid #1f2d4d;
+      white-space: nowrap;
+    }
+    .badge-sheet {
+      background-color: #1d4ed8;
+      color: #ffffff;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .btn-wa {
+      background-color: #25d366;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .btn-wa:hover {
+      background-color: #1eb857;
+      color: #ffffff;
+    }
   </style>
 </head>
-<body class="p-3 p-md-4">
+<body>
 
-  <div class="container-fluid">
-    <!-- NAVIGASI TAB -->
-    <ul class="nav nav-tabs mb-3" id="mainTab">
-      <li class="nav-item">
-        <button class="nav-link active fw-bold" onclick="switchTab('REKAP')">📋 Rekap Data Utama</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link fw-bold" onclick="switchTab('PERANGKAT')">📟 Info Perangkat (Baris 1)</button>
-      </li>
-    </ul>
+  <!-- NAVBAR UTAMA -->
+  <nav class="navbar navbar-dark-custom px-3 py-2 mb-3">
+    <div class="container-fluid p-0 d-flex justify-content-between align-items-center">
+      <span class="fs-5 fw-bold text-white d-flex align-items-center gap-2">
+        📊 Panel Rekap Data Admin
+      </span>
+      <div class="d-flex gap-2">
+        <a href="index.html" class="btn btn-outline-light btn-sm fw-bold">Form Lapangan</a>
+        <a href="admin.html" class="btn btn-primary btn-sm fw-bold">Dashboard Admin</a>
+        <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
+      </div>
+    </div>
+  </nav>
 
-    <!-- FILTER CONTROL -->
-    <div class="card-custom p-3 mb-3">
+  <div class="container-fluid px-3">
+    
+    <!-- CARD FILTER -->
+    <div class="filter-card p-3 mb-3">
       <div class="row g-2">
-        <!-- FILTER SUMBER SHEET (KHUSUS TAB REKAP) -->
-        <div class="col-md-3" id="boxFilterSumber">
-          <label class="form-label text-light small fw-bold">PILIH SUMBER SHEET</label>
-          <select id="filterSumber" class="form-select bg-dark text-white border-secondary" onchange="applyFilter()">
-            <option value="SEMUA">Semua Status</option>
+        <div class="col-md-3">
+          <label class="form-label small text-secondary fw-bold mb-1">PILIH SUMBER SHEET</label>
+          <select id="filterSheet" class="form-select form-select-dark" onchange="applyFilters()">
+            <option value="ALL">Semua Sheet</option>
             <option value="MENUNGGU DIAMBIL">MENUNGGU DIAMBIL</option>
             <option value="SUDAH DIAMBIL">SUDAH DIAMBIL</option>
           </select>
         </div>
-
-        <!-- KRITERIA CARI -->
         <div class="col-md-3">
-          <label class="form-label text-light small fw-bold">KRITERIA CARI</label>
-          <select id="filterKriteria" class="form-select bg-dark text-white border-secondary" onchange="applyFilter()">
-            <option value="SEMUA">Semua Kriteria</option>
+          <label class="form-label small text-secondary fw-bold mb-1">KRITERIA CARI</label>
+          <select id="filterKriteria" class="form-select form-select-dark" onchange="applyFilters()">
+            <option value="ALL">Semua Kriteria</option>
+            <option value="CID">CID / NAMA</option>
             <option value="ODP">ODP</option>
             <option value="POP">POP</option>
-            <option value="NAMA">NAMA</option>
-            <option value="CID">CID</option>
-            <option value="PERANGKAT">PERANGKAT (SN & P-SN)</option>
           </select>
         </div>
-
-        <!-- RENTANG TANGGAL DROPDOWN -->
         <div class="col-md-3">
-          <label class="form-label text-light small fw-bold">RENTANG TANGGAL</label>
-          <select id="filterTanggal" class="form-select bg-dark text-white border-secondary" onchange="applyFilter()">
-            <option value="SEMUA">Semua Waktu</option>
-            <option value="1_MINGGU">1 Minggu Terakhir</option>
-            <option value="2_MINGGU">2 Minggu Terakhir</option>
-            <option value="3_MINGGU">3 Minggu Terakhir</option>
-            <option value="1_BULAN">1 Bulan Terakhir</option>
-          </select>
+          <label class="form-label small text-secondary fw-bold mb-1">CARI BERDASARKAN TANGGAL</label>
+          <input type="date" id="filterTanggal" class="form-control form-control-dark" onchange="applyFilters()">
         </div>
-
-        <!-- KATA KUNCI & FITUR SCAN -->
         <div class="col-md-3">
-          <label class="form-label text-light small fw-bold">KATA KUNCI / SCAN</label>
-          <div class="input-group">
-            <input type="text" id="filterSearch" class="form-control bg-dark text-white border-secondary" placeholder="Ketik CID, Nama, SN, ODP..." onkeyup="applyFilter()">
-            <button class="btn btn-outline-info" type="button" onclick="startCameraScan()">📷 Scan</button>
-          </div>
+          <label class="form-label small text-secondary fw-bold mb-1">KATA KUNCI / SCAN</label>
+          <input type="text" id="filterSearch" class="form-control form-control-dark" placeholder="Ketik CID, Nama, SN, ODP..." oninput="applyFilters()">
         </div>
       </div>
 
-      <div class="d-flex justify-content-between align-items-center mt-3">
-        <span class="text-white-50 fs-6">Total Hasil: <strong id="totalCount" class="text-info">0</strong> Data</span>
-        <button class="btn btn-sm btn-secondary" onclick="resetFilter()">Reset Filter</button>
+      <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary">
+        <div class="small">
+          Total Hasil: <span id="totalDataCount" class="fw-bold text-info">0</span> Data 
+          <a href="#" onclick="resetFilters()" class="text-secondary ms-2 text-decoration-none">Reset Filter</a>
+        </div>
+        <div class="d-flex gap-2">
+          <button onclick="sendSelectedToWA()" class="btn btn-wa btn-sm px-3 d-flex align-items-center gap-1">
+            💬 Kirim Gabungan (WA)
+          </button>
+          <button onclick="loadData()" class="btn btn-primary btn-sm px-3">
+            🔄 Refresh
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- AREA SCANNER CAMERA -->
-    <div id="scannerModal" class="card-custom p-3 mb-3 d-none">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="m-0 text-info">Arahkan Kamera ke Barcode / QR Code</h6>
-        <button class="btn btn-sm btn-danger" onclick="stopCameraScan()">Tutup Kamera</button>
-      </div>
-      <div id="reader" style="width: 100%; max-width: 400px; margin: auto;"></div>
-    </div>
-
-    <!-- TABEL DATA -->
-    <div class="card-custom p-2 table-responsive">
-      <table class="table table-dark-custom table-hover align-middle small m-0" id="dataTable">
+    <!-- TABEL REKAP DATA -->
+    <div class="table-responsive">
+      <table class="table table-rekap align-middle">
         <thead>
-          <tr id="tableHeader"></tr>
+          <tr>
+            <th><input type="checkbox" id="checkAll" onclick="toggleCheckAll(this)"></th>
+            <th>SHEET</th>
+            <th>WAKTU / TANGGAL</th>
+            <th>ODP</th>
+            <th>POP</th>
+            <th>CID / NAMA</th>
+            <th>PAKET</th>
+            <th>NO HP</th>
+            <th>SHERLOCK</th>
+            <th>SALES</th>
+            <th>KET / KENDALA</th>
+          </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="10" class="text-center py-4">Memuat data dari server...</td></tr>
+          <tr><td colspan="11" class="text-center py-4 text-secondary">Memuat data rekap admin...</td></tr>
         </tbody>
       </table>
     </div>
+
   </div>
 
   <script>
-    // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
-
-    let currentTab = "REKAP";
-    let rawData = [];
-    let html5QrCode = null;
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlG.../exec";
+    let rawDataList = [];
 
     window.onload = function() {
+      checkAuth();
       loadData();
     };
 
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-      if (tab === 'REKAP') {
-        document.querySelectorAll('.nav-link')[0].classList.add('active');
-        document.getElementById('boxFilterSumber').style.display = 'block';
-      } else {
-        document.querySelectorAll('.nav-link')[1].classList.add('active');
-        document.getElementById('boxFilterSumber').style.display = 'none';
+    function checkAuth() {
+      if (!localStorage.getItem("user_session")) {
+        window.location.href = "login.html";
       }
-      loadData();
     }
 
     function loadData() {
-      const action = (currentTab === "REKAP") ? "getDataAdmin" : "getInfoPerangkat";
-      document.getElementById('tableBody').innerHTML = '<tr><td colspan="10" class="text-center py-4">Sedang mengambil data...</td></tr>';
-
-      fetch(`${SCRIPT_URL}?action=${action}`)
-        .then(res => res.json())
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" class="text-center py-4 text-secondary">Memuat data dari Google Sheets...</td></tr>';
+      
+      fetch(`${SCRIPT_URL}?action=getDataAdmin`)
+        .then(r => r.json())
         .then(res => {
           if (res.status === "success") {
-            rawData = res.data || [];
-            applyFilter();
+            rawDataList = res.data;
+            applyFilters();
           } else {
-            alert("Gagal memuat data: " + res.message);
+            document.getElementById('tableBody').innerHTML = `<tr><td colspan="11" class="text-center text-danger py-4">${res.message}</td></tr>`;
           }
         })
         .catch(err => {
-          document.getElementById('tableBody').innerHTML = '<tr><td colspan="10" class="text-center text-danger py-4">Gagal terhubung ke Apps Script Server!</td></tr>';
+          document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" class="text-center text-danger py-4">Gagal mengambil data dari server.</td></tr>';
         });
     }
 
-    function applyFilter() {
-      const sumber = document.getElementById("filterSumber").value;
-      const kriteria = document.getElementById("filterKriteria").value;
-      const rentang = document.getElementById("filterTanggal").value;
-      const search = document.getElementById("filterSearch").value.toLowerCase().trim();
+    function applyFilters() {
+      const sheetVal = document.getElementById('filterSheet').value;
+      const tanggalVal = document.getElementById('filterTanggal').value;
+      const searchVal = document.getElementById('filterSearch').value.toLowerCase();
 
-      let filtered = rawData.filter(item => {
-        if (currentTab === "REKAP" && sumber !== "SEMUA" && item.sumber_sheet !== sumber) return false;
+      let filtered = rawDataList.filter(row => {
+        let matchSheet = (sheetVal === "ALL") || (row.sumber_sheet === sheetVal);
+        let matchSearch = !searchVal || 
+          (row.nama_lama && row.nama_lama.toLowerCase().includes(searchVal)) ||
+          (row.cid_lama && row.cid_lama.toLowerCase().includes(searchVal)) ||
+          (row.odp && row.odp.toLowerCase().includes(searchVal)) ||
+          (row.pop && row.pop.toLowerCase().includes(searchVal));
 
-        if (rentang !== "SEMUA" && item.timestamp) {
-          const itemDate = new Date(item.timestamp);
-          const now = new Date();
-          const diffDays = (now - itemDate) / (1000 * 3600 * 24);
-          if (rentang === "1_MINGGU" && diffDays > 7) return false;
-          if (rentang === "2_MINGGU" && diffDays > 14) return false;
-          if (rentang === "3_MINGGU" && diffDays > 21) return false;
-          if (rentang === "1_BULAN" && diffDays > 30) return false;
+        let matchTanggal = true;
+        if (tanggalVal && row.timestamp) {
+          matchTanggal = row.timestamp.startsWith(tanggalVal);
         }
 
-        if (search !== "") {
-          if (kriteria === "ODP") return (item.odp || "").toLowerCase().includes(search);
-          if (kriteria === "POP") return (item.pop || "").toLowerCase().includes(search);
-          if (kriteria === "NAMA") return (item.nama_lama || "").toLowerCase().includes(search);
-          if (kriteria === "CID") return (item.cid_lama || "").toLowerCase().includes(search);
-          if (kriteria === "PERANGKAT") {
-            return (item.sn || "").toLowerCase().includes(search) || (item.psn || "").toLowerCase().includes(search);
-          }
-          return (
-            (item.odp || "").toLowerCase().includes(search) ||
-            (item.pop || "").toLowerCase().includes(search) ||
-            (item.nama_lama || "").toLowerCase().includes(search) ||
-            (item.cid_lama || "").toLowerCase().includes(search) ||
-            (item.sn || "").toLowerCase().includes(search) ||
-            (item.psn || "").toLowerCase().includes(search)
-          );
-        }
-        return true;
+        return matchSheet && matchSearch && matchTanggal;
       });
 
       renderTable(filtered);
     }
 
     function renderTable(data) {
-      document.getElementById("totalCount").innerText = data.length;
-      const header = document.getElementById("tableHeader");
-      const body = document.getElementById("tableBody");
+      document.getElementById('totalDataCount').innerText = data.length;
+      const tbody = document.getElementById('tableBody');
 
-      if (currentTab === "REKAP") {
-        header.innerHTML = `
-          <th>Status</th><th>Timestamp</th><th>Nama</th><th>CID</th><th>Paket</th>
-          <th>Alamat</th><th>No HP</th><th>ODP</th><th>POP</th><th>Sales</th>
-        `;
-        if (data.length === 0) {
-          body.innerHTML = '<tr><td colspan="10" class="text-center py-4">Data tidak ditemukan.</td></tr>';
-          return;
-        }
-        body.innerHTML = data.map(row => `
-          <tr>
-            <td><span class="badge ${row.sumber_sheet === 'SUDAH DIAMBIL' ? 'bg-success' : 'bg-warning text-dark'}">${row.sumber_sheet}</span></td>
-            <td>${row.timestamp || '-'}</td>
-            <td class="fw-bold text-info">${row.nama_lama || '-'}</td>
-            <td>${row.cid_lama || '-'}</td>
-            <td>${row.paket || '-'}</td>
-            <td>${row.alamat || '-'}</td>
-            <td>${row.nohp || '-'}</td>
-            <td>${row.odp || '-'}</td>
-            <td>${row.pop || '-'}</td>
-            <td>${row.sales || '-'}</td>
-          </tr>
-        `).join('');
-      } else {
-        header.innerHTML = `
-          <th>Timestamp</th><th>Nama</th><th>CID</th><th>ODP</th><th>POP</th>
-          <th>SN Unit</th><th>P-SN</th><th>Foto Rumah</th><th>Foto Alat</th><th>Ket</th>
-        `;
-        if (data.length === 0) {
-          body.innerHTML = '<tr><td colspan="10" class="text-center py-4">Data Perangkat kosong.</td></tr>';
-          return;
-        }
-        body.innerHTML = data.map(row => `
-          <tr>
-            <td>${row.timestamp || '-'}</td>
-            <td class="fw-bold text-info">${row.nama_lama || '-'}</td>
-            <td>${row.cid_lama || '-'}</td>
-            <td>${row.odp || '-'}</td>
-            <td>${row.pop || '-'}</td>
-            <td class="text-warning">${row.sn || '-'}</td>
-            <td class="text-warning">${row.psn || '-'}</td>
-            <td>${row.foto_rumah_url ? `<a href="${row.foto_rumah_url}" target="_blank"><img src="${row.foto_rumah_url}" class="img-preview"></a>` : '-'}</td>
-            <td>${row.foto_alat_url ? `<a href="${row.foto_alat_url}" target="_blank"><img src="${row.foto_alat_url}" class="img-preview"></a>` : '-'}</td>
-            <td>${row.keterangan || '-'}</td>
-          </tr>
-        `).join('');
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-secondary">Tidak ada data ditemukan.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map((row, index) => `
+        <tr>
+          <td><input type="checkbox" class="row-checkbox" data-index="${index}"></td>
+          <td><span class="badge badge-sheet">${row.sumber_sheet}</span></td>
+          <td>${row.timestamp || '-'}</td>
+          <td class="text-info fw-bold">${row.odp || '-'}</td>
+          <td>${row.pop || '-'}</td>
+          <td>
+            <div class="fw-bold text-white">${row.nama_lama || '-'}</div>
+            <div class="small text-secondary">CID: ${row.cid_lama || '-'}</div>
+          </td>
+          <td>${row.paket || '-'}</td>
+          <td>${row.nohp || '-'}</td>
+          <td>
+            ${row.sherlock ? `<a href="https://www.google.com/maps?q=${row.sherlock}" target="_blank" class="text-info text-decoration-none">📍 Maps</a>` : '-'}
+          </td>
+          <td>${row.sales || '-'}</td>
+          <td>${row.keterangan || '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleCheckAll(source) {
+      checkboxes = document.getElementsByClassName('row-checkbox');
+      for (var i = 0, n = checkboxes.length; i < n; i++) {
+        checkboxes[i].checked = source.checked;
       }
     }
 
-    function resetFilter() {
-      document.getElementById("filterSumber").value = "SEMUA";
-      document.getElementById("filterKriteria").value = "SEMUA";
-      document.getElementById("filterTanggal").value = "SEMUA";
-      document.getElementById("filterSearch").value = "";
-      applyFilter();
+    function resetFilters() {
+      document.getElementById('filterSheet').value = "ALL";
+      document.getElementById('filterKriteria').value = "ALL";
+      document.getElementById('filterTanggal').value = "";
+      document.getElementById('filterSearch').value = "";
+      applyFilters();
     }
 
-    function startCameraScan() {
-      document.getElementById('scannerModal').classList.remove('d-none');
-      html5QrCode = new Html5Qrcode("reader");
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        qrCodeMessage => {
-          document.getElementById("filterSearch").value = qrCodeMessage;
-          applyFilter();
-          stopCameraScan();
-        },
-        errorMessage => {}
-      );
-    }
-
-    function stopCameraScan() {
-      if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-          document.getElementById('scannerModal').classList.add('d-none');
-        });
+    function sendSelectedToWA() {
+      const selectedBoxes = document.querySelectorAll('.row-checkbox:checked');
+      if (selectedBoxes.length === 0) {
+        alert("Pilih setidaknya satu baris data untuk dikirim ke WA!");
+        return;
       }
+
+      let textMsg = "*REKAP DATA KLIEN*\n\n";
+      selectedBoxes.forEach(box => {
+        const idx = box.getAttribute('data-index');
+        const item = rawDataList[idx];
+        textMsg += `📌 *${item.nama_lama}* (${item.cid_lama})\nODP: ${item.odp} | POP: ${item.pop}\n\n`;
+      });
+
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`, '_blank');
+    }
+
+    function logout() {
+      localStorage.removeItem("user_session");
+      window.location.href = "login.html";
     }
   </script>
 </body>

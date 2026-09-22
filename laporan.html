@@ -190,14 +190,14 @@
       });
     }
 
-    function eksekusiHapusArsip() {
+function eksekusiHapusArsip() {
       const teksCid = document.getElementById('listCidHapus').value;
-      if (!teksCid) { alert("Daftar CID/Teks hapus masih kosong!"); return; }
-      if (!confirm("Yakin ingin menghapus dan mengarsipkan data tersebut?")) return;
+      if (!teksCid) { alert("Teks rekap laporan masih kosong!"); return; }
+      if (!confirm("Yakin ingin memproses penghapusan & pengarsipan data ini?")) return;
 
       const btn = document.getElementById('btnHapusArsip');
       btn.disabled = true; 
-      btn.innerText = "Menghapus...";
+      btn.innerText = "Memproses...";
 
       fetch(SCRIPT_URL, {
         method: "POST",

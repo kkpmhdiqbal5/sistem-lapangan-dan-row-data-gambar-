@@ -8,7 +8,7 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
-    body { background-color: #0b132b; color: #e0e6ed; font-family: 'Segoe UI', sans-serif; padding-bottom: 70px; }
+    body { background-color: #0b132b; color: #e0e6ed; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; }
     .navbar-dark-custom { background-color: #1c2541; border-bottom: 1px solid #2a385b; }
     .filter-card { background-color: #1c2541; border: 1px solid #2a385b; border-radius: 8px; }
     .form-control-dark, .form-select-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
@@ -18,77 +18,71 @@
     .badge-sheet { background-color: #1d4ed8; color: #ffffff; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; }
     .btn-wa { background-color: #25d366; color: #ffffff; font-weight: 600; }
     
-    /* BOTTOM NAVIGATION BAR SERAGAM */
-    .bottom-app-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1c2541; border-top: 1px solid #2a385b; display: flex; justify-content: space-around; padding: 10px 0 12px 0; z-index: 1000; }
-    .nav-link-mobile { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 0.72rem; font-weight: 600; }
-    .nav-link-mobile.active { color: #38bdf8; }
-    .nav-icon { font-size: 1.25rem; margin-bottom: 2px; }
-
     /* BOTTOM NAVIGATION BAR DENGAN TOMBOL TENGAH MENCOLOK */
-.bottom-app-nav { 
-  position: fixed; 
-  bottom: 0; 
-  left: 0; 
-  right: 0; 
-  background: #1c2541; 
-  border-top: 1px solid #2a385b; 
-  display: flex; 
-  justify-content: space-around; 
-  align-items: center;
-  padding: 6px 0; 
-  z-index: 1000; 
-  height: 65px;
-}
-.nav-link-mobile { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  text-decoration: none; 
-  color: #94a3b8; 
-  font-size: 0.7rem; 
-  font-weight: 600; 
-  flex: 1;
-}
-.nav-link-mobile.active { 
-  color: #38bdf8; 
-}
-.nav-icon { 
-  font-size: 1.2rem; 
-  margin-bottom: 2px; 
-}
+    .bottom-app-nav { 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      right: 0; 
+      background: #1c2541; 
+      border-top: 1px solid #2a385b; 
+      display: flex; 
+      justify-content: space-around; 
+      align-items: center;
+      padding: 6px 0; 
+      z-index: 1000; 
+      height: 65px;
+    }
+    .nav-link-mobile { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      text-decoration: none; 
+      color: #94a3b8; 
+      font-size: 0.7rem; 
+      font-weight: 600; 
+      flex: 1;
+    }
+    .nav-link-mobile.active { 
+      color: #38bdf8; 
+    }
+    .nav-icon { 
+      font-size: 1.2rem; 
+      margin-bottom: 2px; 
+    }
 
-/* Tombol Form Lapangan di Tengah yang Mencolok */
-.nav-link-center {
-  position: relative;
-  top: -12px; /* Membuat tombol sedikit naik ke atas */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-}
-.nav-center-circle {
-  background: linear-gradient(135deg, #22c55e, #16a34a); /* Warna hijau terang mencolok */
-  color: white;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5); /* Efek cahaya/shadow */
-  border: 3px solid #0b132b;
-  transition: transform 0.2s;
-}
-.nav-link-center:active .nav-center-circle {
-  transform: scale(0.95);
-}
-.nav-center-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #22c55e;
-  margin-top: 2px;
-}
+    /* Tombol Form Lapangan di Tengah yang Mencolok */
+    .nav-link-center {
+      position: relative;
+      top: -12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+    }
+    .nav-center-circle {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5);
+      border: 3px solid #0b132b;
+      transition: transform 0.2s;
+    }
+    .nav-link-center:active .nav-center-circle {
+      transform: scale(0.95);
+    }
+    .nav-center-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #22c55e;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -97,10 +91,7 @@
   <nav class="navbar navbar-dark-custom px-3 py-2 mb-3">
     <div class="container-fluid p-0 d-flex justify-content-between align-items-center">
       <span class="fs-5 fw-bold text-white">📊 Panel Rekap Data Admin</span>
-      <div class="d-flex gap-2">
-       
-        <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
-      </div>
+      <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
     </div>
   </nav>
 
@@ -165,13 +156,13 @@
     </div>
   </div>
 
-   <!-- BOTTOM NAVIGATION BAR (Tombol Form Lapangan di Tengah & Mencolok) -->
+  <!-- BOTTOM NAVIGATION BAR (Tombol Form Lapangan di Tengah & Mencolok) -->
   <div class="bottom-app-nav">
     <a href="search.html" class="nav-link-mobile">
       <div class="nav-icon">🔍</div><span>Cari</span>
     </a>
     
-    <a href="admin.html" class="nav-link-mobile">
+    <a href="admin.html" class="nav-link-mobile active">
       <div class="nav-icon">💻</div><span>Perangkat</span>
     </a>
 
@@ -184,12 +175,9 @@
     <a href="laporan.html" class="nav-link-mobile">
       <div class="nav-icon">📊</div><span>Laporan</span>
     </a>
+  </div>
 
-    <a href="laporan.html" class="nav-link-mobile">
-      <div class="nav-icon"></div><span>menunggu </span>
-    </a>
-
-  <!-- MODAL SCANNER & PANEL -->
+  <!-- MODAL SCANNER -->
   <div id="scannerModal" class="modal fade" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white">
@@ -202,49 +190,50 @@
     </div>
   </div>
 
-  <div id="panelModal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content bg-dark text-white rounded-4">
-        <div class="modal-header border-secondary">
-          <h6 class="modal-title text-info" id="panelModalTitle">Panel Kontrol</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body" id="panelModalBody"></div>
-      </div>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
-    let rawDataList = [], html5QrCode = null;
+    let rawDataList = [];
+    let filteredDataList = [];
+    let html5QrCode = null;
 
     window.onload = function() { checkAuth(); loadData(); };
     function checkAuth() { if (!localStorage.getItem("user_session")) window.location.href = "login.html"; }
 
     function loadData() {
       fetch(`${SCRIPT_URL}?action=getDataAdmin`).then(r => r.json()).then(res => {
-        if (res.status === "success") { rawDataList = res.data; applyFilters(); }
+        if (res.status === "success") { 
+          rawDataList = res.data; 
+          applyFilters(); 
+        }
       });
     }
 
     function applyFilters() {
       const sheetVal = document.getElementById('filterSheet').value;
-      const kriteriaVal = document.getElementById('filterKriteria').value;
       const searchVal = document.getElementById('filterSearch').value.toLowerCase();
 
-      let filtered = rawDataList.filter(row => {
+      filteredDataList = rawDataList.filter(row => {
         let matchSheet = (sheetVal === "ALL") || (row.sumber_sheet === sheetVal);
-        let matchSearch = !searchVal || (row.nama_lama?.toLowerCase().includes(searchVal) || row.cid_lama?.toLowerCase().includes(searchVal) || row.odp?.toLowerCase().includes(searchVal) || row.sn?.toLowerCase().includes(searchVal));
+        let matchSearch = !searchVal || (
+          row.nama_lama?.toLowerCase().includes(searchVal) || 
+          row.cid_lama?.toLowerCase().includes(searchVal) || 
+          row.odp?.toLowerCase().includes(searchVal) || 
+          row.sn?.toLowerCase().includes(searchVal)
+        );
         return matchSheet && matchSearch;
       });
-      renderTable(filtered);
+      renderTable(filteredDataList);
     }
 
     function renderTable(data) {
       document.getElementById('totalDataCount').innerText = data.length;
       const tbody = document.getElementById('tableBody');
-      if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-secondary">Tidak ada data.</td></tr>'; return; }
+      if (data.length === 0) { 
+        tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-secondary">Tidak ada data.</td></tr>'; 
+        return; 
+      }
+      
       tbody.innerHTML = data.map((row, index) => `
         <tr>
           <td><input type="checkbox" class="row-checkbox" data-index="${index}"></td>
@@ -254,9 +243,11 @@
           <td>${row.pop || '-'}</td>
           <td><div class="fw-bold text-white">${row.nama_lama || '-'}</div><div class="small text-secondary">CID: ${row.cid_lama || '-'}</div></td>
           <td><div class="text-success fw-bold">SN: ${row.sn || '-'}</div></td>
-          <td>${row.paket || '-'}</td><td>${row.nohp || '-'}</td>
+          <td>${row.paket || '-'}</td>
+          <td>${row.nohp || '-'}</td>
           <td>${row.sherlock ? `<a href="https://www.google.com/maps?q=${row.sherlock}" target="_blank" class="text-info">📍 Maps</a>` : '-'}</td>
-          <td>${row.sales || '-'}</td><td>${row.keterangan || '-'}</td>
+          <td>${row.sales || '-'}</td>
+          <td>${row.keterangan || '-'}</td>
         </tr>
       `).join('');
     }
@@ -265,39 +256,40 @@
       new bootstrap.Modal(document.getElementById('scannerModal')).show();
       html5QrCode = new Html5Qrcode("reader");
       html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, msg => {
-        document.getElementById('filterSearch').value = msg; applyFilters(); stopScanner();
+        document.getElementById('filterSearch').value = msg; 
+        applyFilters(); 
+        stopScanner();
       });
     }
-    function stopScanner() { if (html5QrCode) html5QrCode.stop().then(() => { html5QrCode.clear(); bootstrap.Modal.getInstance(document.getElementById('scannerModal'))?.hide(); }); }
 
-    function bukaModalLaporan() {
-      document.getElementById('panelModalTitle').innerText = "📊 Sistem Hapus Massal & Arsip";
-      document.getElementById('panelModalBody').innerHTML = `
-        <textarea id="listCidHapus" class="form-control form-control-sm bg-dark text-white mb-2" rows="4" placeholder="Tempel laporan WhatsApp untuk hapus selektif..."></textarea>
-        <button onclick="alert('Parameter hapus terhubung dengan backend.')" class="btn btn-danger btn-sm w-100 fw-bold">Eksekusi Hapus & Arsip</button>
-      `;
-      new bootstrap.Modal(document.getElementById('panelModal')).show();
+    function stopScanner() { 
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => { 
+          html5QrCode.clear(); 
+          bootstrap.Modal.getInstance(document.getElementById('scannerModal'))?.hide(); 
+        }); 
+      } 
     }
 
-    function bukaModalInput() {
-      document.getElementById('panelModalTitle').innerText = "📥 Sistem Input Massal";
-      document.getElementById('panelModalBody').innerHTML = `
-        <textarea id="teksMassal" class="form-control form-control-sm bg-dark text-white mb-2 font-monospace" rows="5" placeholder="Nama : ...\nCID : ..."></textarea>
-        <button onclick="alert('Parameter input massal siap diproses.')" class="btn btn-primary btn-sm w-100 fw-bold">Proses Input Massal</button>
-      `;
-      new bootstrap.Modal(document.getElementById('panelModal')).show();
+    function toggleCheckAll(src) { 
+      document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = src.checked); 
     }
-
-    function toggleCheckAll(src) { document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = src.checked); }
-    function resetFilters() { document.getElementById('filterSheet').value = "ALL"; document.getElementById('filterKriteria').value = "ALL"; document.getElementById('filterTanggal').value = ""; document.getElementById('filterSearch').value = ""; applyFilters(); }
 
     function sendSelectedToWA() {
       const selected = document.querySelectorAll('.row-checkbox:checked');
       if (selected.length === 0) { alert("Pilih minimal satu data!"); return; }
+      
       let textMsg = `📋 *REKAP GABUNGAN (${selected.length} DATA)*\n====================================\n\n`;
       selected.forEach((box, i) => {
-        const item = rawDataList[box.getAttribute('data-index')];
-        textMsg += `*${i+1}. ${item.nama_lama || '-'}*\n* ODP: ${item.odp || '-'}\n* POP: ${item.pop || '-'}\n* CID: ${item.cid_lama || '-'}\n* SN: ${item.sn || '-'}\n* Sheet: ${item.sumber_sheet}\n\n`;
+        const item = filteredDataList[box.getAttribute('data-index')];
+        if (item) {
+          textMsg += `*${i+1}. ${item.nama_lama || '-'}*\n` +
+                     `* ODP: ${item.odp || '-'}\n` +
+                     `* POP: ${item.pop || '-'}\n` +
+                     `* CID: ${item.cid_lama || '-'}\n` +
+                     `* SN: ${item.sn || '-'}\n` +
+                     `* Sheet: ${item.sumber_sheet}\n\n`;
+        }
       });
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`, '_blank');
     }

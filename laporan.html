@@ -42,16 +42,16 @@
   </div>
 
   <div class="container px-3">
-    <!-- Tombol Utama -->
+    <!-- Menu Utama -->
     <div id="menuUtama" class="row g-3">
       <div class="col-12">
         <button onclick="bukaForm('input')" class="btn btn-success w-100 py-3 fw-bold shadow-sm fs-6">
-          📥 Input Data (Teks / File .txt / .docx)
+          📥 Input Data (File / Teks Manual)
         </button>
       </div>
       <div class="col-12">
         <button onclick="bukaForm('hapus')" class="btn btn-danger w-100 py-3 fw-bold shadow-sm fs-6">
-          🗑 LAPORAN 
+          🗑 LAPORAN (Hapus & Arsip)
         </button>
       </div>
     </div>
@@ -59,11 +59,11 @@
     <!-- Form Input Massal & File -->
     <div id="formInputMassal" class="card-custom p-3 d-none mt-2">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="text-success fw-bold m-0">📥 Form Input Data (File / Manual)</h6>
+        <h6 class="text-success fw-bold m-0">📥 Form Input Data (.txt / .docx / Manual)</h6>
         <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
       </div>
       
-      <!-- Opsi Upload File (.txt atau .docx) -->
+      <!-- Upload File -->
       <div class="mb-3">
         <label class="form-label small text-info fw-bold">Pilih File (.txt atau .docx):</label>
         <input type="file" id="fileInput" class="form-control form-control-dark" accept=".txt,.docx" onchange="bacaFile(event)">
@@ -71,7 +71,7 @@
 
       <div class="text-center small text-muted mb-2">- ATAU TEMPEL TEKS MANUAL DI BAWAH -</div>
 
-      <!-- Opsi Tempel Manual -->
+      <!-- Textarea Manual -->
       <textarea id="teksMassal" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Nama : ...&#10;CID : ...&#10;ODP : ..."></textarea>
       
       <button onclick="eksekusiInputMassal()" id="btnInputMassal" class="btn btn-success btn-sm w-100 fw-bold py-2">Proses Input Data</button>
@@ -127,7 +127,7 @@
       document.getElementById('menuUtama').classList.remove('d-none');
     }
 
-    // Fungsi otomatis mendeteksi apakah file .txt atau .docx
+    // Pembaca File Otomatis (.txt / .docx)
     function bacaFile(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -147,7 +147,7 @@
           const arrayBuffer = e.target.result;
           mammoth.extractRawText({ arrayBuffer: arrayBuffer })
             .then(function(result) {
-              document.getElementById('teksMassal').value = result.value; // Hasil teks dimasukkan ke textarea
+              document.getElementById('teksMassal').value = result.value;
             })
             .catch(function(err) {
               alert("Gagal membaca file Word (.docx): " + err);

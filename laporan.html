@@ -208,5 +208,25 @@
 
     function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
   </script>
+  <!-- BOTTOM NAVIGATION BAR (Tombol Form Lapangan di Tengah & Mencolok) -->
+  <div class="bottom-app-nav">
+    <a href="search.html" class="nav-link-mobile">
+      <div class="nav-icon">🔍</div><span>Cari</span>
+    </a>
+    
+    <a href="admin.html" class="nav-link-mobile">
+      <div class="nav-icon">💻</div><span>Perangkat</span>
+    </a>
+
+    <!-- Tombol Form Lapangan di Tengah & Paling Mencolok -->
+    <a href="index.html" class="nav-link-center">
+      <div class="nav-center-circle">📝</div>
+      <span class="nav-center-label">Form Lapangan</span>
+    </a>
+
+    <a href="laporan.html" class="nav-link-mobile">
+      <div class="nav-icon">📊</div><span>Laporan</span>
+    </a>
+  </div>
 </body>
 </html>

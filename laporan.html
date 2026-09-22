@@ -130,20 +130,29 @@
   </div>
 
   <!-- BOTTOM NAVIGATION BAR LENGKAP -->
+    <!-- BOTTOM NAVIGATION BAR (Tombol Form Lapangan di Tengah & Mencolok) -->
   <div class="bottom-app-nav">
     <a href="search.html" class="nav-link-mobile">
-      <div class="nav-icon">🔍</div><span>Sistem Cari</span>
+      <div class="nav-icon">🔍</div><span>Cari</span>
     </a>
+    
     <a href="admin.html" class="nav-link-mobile">
-      <div class="nav-icon">💻</div><span>Info Perangkat</span>
+      <div class="nav-icon">💻</div><span>Perangkat</span>
     </a>
-    <a href="index.html" class="nav-link-mobile">
-      <div class="nav-icon">📝</div><span>Form Lapangan</span>
+
+    <!-- Tombol Form Lapangan di Tengah & Paling Mencolok -->
+    <a href="index.html" class="nav-link-center">
+      <div class="nav-center-circle">📝</div>
+      <span class="nav-center-label">Form Lapangan</span>
     </a>
-    <a href="laporan.html" class="nav-link-mobile active">
+
+    <a href="laporan.html" class="nav-link-mobile">
       <div class="nav-icon">📊</div><span>Laporan</span>
     </a>
-  </div>
+
+    <a href="laporan.html" class="nav-link-mobile">
+      <div class="nav-icon"></div><span>menunggu </span>
+    </a>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
@@ -208,29 +217,6 @@
 
     function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
   </script>
-  <!-- BOTTOM NAVIGATION BAR (Tombol Form Lapangan di Tengah & Mencolok) -->
-  <div class="bottom-app-nav">
-    <a href="search.html" class="nav-link-mobile">
-      <div class="nav-icon">🔍</div><span>Cari</span>
-    </a>
-    
-    <a href="admin.html" class="nav-link-mobile">
-      <div class="nav-icon">💻</div><span>Perangkat</span>
-    </a>
-
-    <!-- Tombol Form Lapangan di Tengah & Paling Mencolok -->
-    <a href="index.html" class="nav-link-center">
-      <div class="nav-center-circle">📝</div>
-      <span class="nav-center-label">Form Lapangan</span>
-    </a>
-
-    <a href="laporan.html" class="nav-link-mobile">
-      <div class="nav-icon">📊</div><span>Laporan</span>
-    </a>
-
-    <a href="laporan.html" class="nav-link-mobile">
-      <div class="nav-icon"></div><span>menunggu </span>
-    </a>
   </div>
 </body>
 </html>

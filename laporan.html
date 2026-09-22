@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan & Sistem Input - Sistem Lapangan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #0b132b; color: #e0e6ed; font-family: 'Segoe UI', sans-serif; padding-bottom: 85px; }
+    .top-bar { background-color: #1c2541; padding: 14px 20px; border-bottom: 1px solid #2a385b; }
+    .card-custom { background-color: #1c2541; border: 1px solid #2a385b; border-radius: 12px; }
+    .form-control-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
+    
+    /* BOTTOM NAVIGATION BAR SERAGAM */
+    .bottom-app-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1c2541; border-top: 1px solid #2a385b; display: flex; justify-content: space-around; padding: 10px 0 12px 0; z-index: 1000; }
+    .nav-link-mobile { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 0.72rem; font-weight: 600; }
+    .nav-link-mobile.active { color: #38bdf8; }
+    .nav-icon { font-size: 1.25rem; margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar d-flex justify-content-between align-items-center mb-3">
+    <div class="fw-bold fs-5 text-white">📊 Pusat Laporan & Sistem Input</div>
+    <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
+  </div>
+
+  <div class="container px-3">
+    <!-- Card Sistem Input Massal -->
+    <div class="card-custom p-3 mb-3">
+      <h6 class="text-success fw-bold mb-2">📥 Sistem Input Data Massal</h6>
+      <p class="small text-muted mb-2">Tempel teks laporan harian WhatsApp atau format massal (>100K karakter) di bawah ini:</p>
+      <textarea id="teksMassal" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Nama : ...&#10;CID : ...&#10;ODP : ..."></textarea>
+      <button onclick="eksekusiInputMassal()" id="btnInputMassal" class="btn btn-success btn-sm w-100 fw-bold py-2">Proses Input Massal</button>
+    </div>
+
+    <!-- Card Sistem Hapus Arsip Selektif -->
+    <div class="card-custom p-3">
+      <h6 class="text-danger fw-bold mb-2">🗑 Sistem Hapus Massal & Arsip Selektif</h6>
+      <p class="small text-muted mb-2">Tempel daftar CID atau nama yang ingin dihapus secara selektif dan diarsipkan otomatis:</p>
+      <textarea id="listCidHapus" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Tempel CID atau format laporan WA di sini..."></textarea>
+      <button onclick="eksekusiHapusArsip()" id="btnHapusArsip" class="btn btn-danger btn-sm w-100 fw-bold py-2">Eksekusi Hapus & Arsip</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR LENGKAP -->
+  <div class="bottom-app-nav">
+    <a href="search.html" class="nav-link-mobile">
+      <div class="nav-icon">🔍</div><span>Sistem Cari</span>
+    </a>
+    <a href="admin.html" class="nav-link-mobile">
+      <div class="nav-icon">💻</div><span>Info Perangkat</span>
+    </a>
+    <a href="index.html" class="nav-link-mobile">
+      <div class="nav-icon">📝</div><span>Form Lapangan</span>
+    </a>
+    <a href="laporan.html" class="nav-link-mobile active">
+      <div class="nav-icon">📊</div><span>Laporan</span>
+    </a>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
+
+    function eksekusiInputMassal() {
+      const teks = document.getElementById('teksMassal').value;
+      if (!teks) { alert("Teks input masih kosong!"); return; }
+      const btn = document.getElementById('btnInputMassal');
+      btn.disabled = true; btn.innerText = "Memproses...";
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "inputMassal", teks: teks })
+      })
+      .then(r => r.json()).then(res => {
+        alert(res.message);
+        if(res.status === "success") document.getElementById('teksMassal').value = "";
+      }).finally(() => { btn.disabled = false; btn.innerText = "Proses Input Massal"; });
+    }
+
+    function eksekusiHapusArsip() {
+      const teksCid = document.getElementById('listCidHapus').value;
+      if (!teksCid) { alert("Daftar CID/Teks hapus masih kosong!"); return; }
+      if (!confirm("Yakin ingin menghapus dan mengarsipkan data tersebut?")) return;
+
+      const btn = document.getElementById('btnHapusArsip');
+      btn.disabled = true; btn.innerText = "Menghapus...";
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "hapusArsipSelektif", teksCid: teksCid })
+      })
+      .then(r => r.json()).then(res => {
+        alert(res.message);
+        if(res.status === "success") document.getElementById('listCidHapus').value = "";
+      }).finally(() => { btn.disabled = false; btn.innerText = "Eksekusi Hapus & Arsip"; });
+    }
+
+    function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
+  </script>
+</body>
+</html>

@@ -20,24 +20,44 @@
 </head>
 <body>
 
-  <div class="top-bar d-flex justify-content-between align-items-center mb-3">
+  <div class="top-bar d-flex justify-content-between align-items-center mb-4">
     <div class="fw-bold fs-5 text-white">📊 Pusat Laporan & Sistem Input</div>
     <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
   </div>
 
   <div class="container px-3">
-    <!-- Card Sistem Input Massal -->
-    <div class="card-custom p-3 mb-3">
-      <h6 class="text-success fw-bold mb-2">📥 Sistem Input Data Massal</h6>
-      <p class="small text-muted mb-2">Tempel teks laporan harian WhatsApp atau format massal (>100K karakter) di bawah ini:</p>
+    <!-- 2 Tombol Utama -->
+    <div id="menuUtama" class="row g-3">
+      <div class="col-12">
+        <button onclick="bukaForm('input')" class="btn btn-success w-100 py-3 fw-bold shadow-sm fs-6">
+          📥 Input Data Massal
+        </button>
+      </div>
+      <div class="col-12">
+        <button onclick="bukaForm('hapus')" class="btn btn-danger w-100 py-3 fw-bold shadow-sm fs-6">
+          🗑 Sistem Hapus & Arsip Selektif
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Input Massal (Tersembunyi Awalnya) -->
+    <div id="formInputMassal" class="card-custom p-3 d-none mt-2">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="text-success fw-bold m-0">📥 Form Input Data Massal</h6>
+        <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
+      </div>
+      <p class="small text-muted mb-2">Tempel teks laporan harian WhatsApp atau format massal di bawah ini:</p>
       <textarea id="teksMassal" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Nama : ...&#10;CID : ...&#10;ODP : ..."></textarea>
       <button onclick="eksekusiInputMassal()" id="btnInputMassal" class="btn btn-success btn-sm w-100 fw-bold py-2">Proses Input Massal</button>
     </div>
 
-    <!-- Card Sistem Hapus Arsip Selektif -->
-    <div class="card-custom p-3">
-      <h6 class="text-danger fw-bold mb-2">🗑 Sistem Hapus Massal & Arsip Selektif</h6>
-      <p class="small text-muted mb-2">Tempel daftar CID atau nama yang ingin dihapus secara selektif dan diarsipkan otomatis:</p>
+    <!-- Form Hapus & Arsip (Tersembunyi Awalnya) -->
+    <div id="formHapusArsip" class="card-custom p-3 d-none mt-2">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="text-danger fw-bold m-0">🗑 Form Hapus & Arsip Selektif</h6>
+        <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
+      </div>
+      <p class="small text-muted mb-2">Tempel daftar CID atau nama yang ingin dihapus dan diarsipkan otomatis:</p>
       <textarea id="listCidHapus" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Tempel CID atau format laporan WA di sini..."></textarea>
       <button onclick="eksekusiHapusArsip()" id="btnHapusArsip" class="btn btn-danger btn-sm w-100 fw-bold py-2">Eksekusi Hapus & Arsip</button>
     </div>
@@ -62,6 +82,24 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
 
+    function bukaForm(jenis) {
+      document.getElementById('menuUtama').classList.add('d-none');
+      document.getElementById('formInputMassal').classList.add('d-none');
+      document.getElementById('formHapusArsip').classList.add('d-none');
+
+      if (jenis === 'input') {
+        document.getElementById('formInputMassal').classList.remove('d-none');
+      } else if (jenis === 'hapus') {
+        document.getElementById('formHapusArsip').classList.remove('d-none');
+      }
+    }
+
+    function tutupForm() {
+      document.getElementById('formInputMassal').classList.add('d-none');
+      document.getElementById('formHapusArsip').classList.add('d-none');
+      document.getElementById('menuUtama').classList.remove('d-none');
+    }
+
     function eksekusiInputMassal() {
       const teks = document.getElementById('teksMassal').value;
       if (!teks) { alert("Teks input masih kosong!"); return; }
@@ -74,7 +112,10 @@
       })
       .then(r => r.json()).then(res => {
         alert(res.message);
-        if(res.status === "success") document.getElementById('teksMassal').value = "";
+        if(res.status === "success") {
+          document.getElementById('teksMassal').value = "";
+          tutupForm();
+        }
       }).finally(() => { btn.disabled = false; btn.innerText = "Proses Input Massal"; });
     }
 
@@ -92,7 +133,10 @@
       })
       .then(r => r.json()).then(res => {
         alert(res.message);
-        if(res.status === "success") document.getElementById('listCidHapus').value = "";
+        if(res.status === "success") {
+          document.getElementById('listCidHapus').value = "";
+          tutupForm();
+        }
       }).finally(() => { btn.disabled = false; btn.innerText = "Eksekusi Hapus & Arsip"; });
     }
 

@@ -279,7 +279,7 @@
       const selected = document.querySelectorAll('.row-checkbox:checked');
       if (selected.length === 0) { alert("Pilih minimal satu data!"); return; }
       
-      let textMsg = `📋 *REKAP GABUNGAN (${selected.length} DATA)*\n====================================\n\n`;
+      let textMsg = `📋 *REKAP GABUNGAN (${selected.length} DATA LAPANGAN)*\n====================================\n\n`;
       selected.forEach((box, i) => {
         const item = filteredDataList[box.getAttribute('data-index')];
         if (item) {
@@ -288,7 +288,11 @@
                      `* POP: ${item.pop || '-'}\n` +
                      `* CID: ${item.cid_lama || '-'}\n` +
                      `* SN: ${item.sn || '-'}\n` +
-                     `* Sheet: ${item.sumber_sheet}\n\n`;
+                     `* Sheet: ${item.sumber_sheet}\n` +
+                     `* Ket: ${item.keterangan || '-'}\n` +
+                     `📍 Sherlock: ${item.sherlock ? 'https://www.google.com/maps?q=' + item.sherlock : '-'}\n` +
+                     `🖼️ Foto Rumah: -\n` +
+                     `🖼️ Foto Alat: -\n\n`;
         }
       });
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`, '_blank');

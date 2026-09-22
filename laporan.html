@@ -11,77 +11,71 @@
     .card-custom { background-color: #1c2541; border: 1px solid #2a385b; border-radius: 12px; }
     .form-control-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
     
-    /* BOTTOM NAVIGATION BAR SERAGAM */
-    .bottom-app-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1c2541; border-top: 1px solid #2a385b; display: flex; justify-content: space-around; padding: 10px 0 12px 0; z-index: 1000; }
-    .nav-link-mobile { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 0.72rem; font-weight: 600; }
-    .nav-link-mobile.active { color: #38bdf8; }
-    .nav-icon { font-size: 1.25rem; margin-bottom: 2px; }
+    /* BOTTOM NAVIGATION BAR */
+    .bottom-app-nav { 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      right: 0; 
+      background: #1c2541; 
+      border-top: 1px solid #2a385b; 
+      display: flex; 
+      justify-content: space-around; 
+      align-items: center;
+      padding: 6px 0; 
+      z-index: 1000; 
+      height: 65px;
+    }
+    .nav-link-mobile { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      text-decoration: none; 
+      color: #94a3b8; 
+      font-size: 0.7rem; 
+      font-weight: 600; 
+      flex: 1;
+    }
+    .nav-link-mobile.active { 
+      color: #38bdf8; 
+    }
+    .nav-icon { 
+      font-size: 1.2rem; 
+      margin-bottom: 2px; 
+    }
 
-    /* BOTTOM NAVIGATION BAR DENGAN TOMBOL TENGAH MENCOLOK */
-.bottom-app-nav { 
-  position: fixed; 
-  bottom: 0; 
-  left: 0; 
-  right: 0; 
-  background: #1c2541; 
-  border-top: 1px solid #2a385b; 
-  display: flex; 
-  justify-content: space-around; 
-  align-items: center;
-  padding: 6px 0; 
-  z-index: 1000; 
-  height: 65px;
-}
-.nav-link-mobile { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  text-decoration: none; 
-  color: #94a3b8; 
-  font-size: 0.7rem; 
-  font-weight: 600; 
-  flex: 1;
-}
-.nav-link-mobile.active { 
-  color: #38bdf8; 
-}
-.nav-icon { 
-  font-size: 1.2rem; 
-  margin-bottom: 2px; 
-}
-
-/* Tombol Form Lapangan di Tengah yang Mencolok */
-.nav-link-center {
-  position: relative;
-  top: -12px; /* Membuat tombol sedikit naik ke atas */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-}
-.nav-center-circle {
-  background: linear-gradient(135deg, #22c55e, #16a34a); /* Warna hijau terang mencolok */
-  color: white;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5); /* Efek cahaya/shadow */
-  border: 3px solid #0b132b;
-  transition: transform 0.2s;
-}
-.nav-link-center:active .nav-center-circle {
-  transform: scale(0.95);
-}
-.nav-center-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #22c55e;
-  margin-top: 2px;
-}
+    /* Tombol Form Lapangan di Tengah yang Mencolok */
+    .nav-link-center {
+      position: relative;
+      top: -12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+    }
+    .nav-center-circle {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5);
+      border: 3px solid #0b132b;
+      transition: transform 0.2s;
+    }
+    .nav-link-center:active .nav-center-circle {
+      transform: scale(0.95);
+    }
+    .nav-center-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #22c55e;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -129,8 +123,7 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR LENGKAP -->
-    <!-- BOTTOM NAVIGATION BAR (Tombol Form Lapangan di Tengah & Mencolok) -->
+  <!-- BOTTOM NAVIGATION BAR -->
   <div class="bottom-app-nav">
     <a href="search.html" class="nav-link-mobile">
       <div class="nav-icon">🔍</div><span>Cari</span>
@@ -146,13 +139,10 @@
       <span class="nav-center-label">Form Lapangan</span>
     </a>
 
-    <a href="laporan.html" class="nav-link-mobile">
+    <a href="laporan.html" class="nav-link-mobile active">
       <div class="nav-icon">📊</div><span>Laporan</span>
     </a>
-
-    <a href="laporan.html" class="nav-link-mobile">
-      <div class="nav-icon"></div><span>menunggu </span>
-    </a>
+  </div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHOXnA4YsBeNdPDUxXwPlsJHPJo7k7E4IqItpNOKLjfsYeQce7a9Gda8p-3p-Ys6tJkg/exec";
@@ -178,20 +168,31 @@
     function eksekusiInputMassal() {
       const teks = document.getElementById('teksMassal').value;
       if (!teks) { alert("Teks input masih kosong!"); return; }
+      
       const btn = document.getElementById('btnInputMassal');
-      btn.disabled = true; btn.innerText = "Memproses...";
+      btn.disabled = true; 
+      btn.innerText = "Memproses...";
 
       fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({ action: "inputMassal", teks: teks })
       })
-      .then(r => r.json()).then(res => {
+      .then(r => r.json())
+      .then(res => {
         alert(res.message);
         if(res.status === "success") {
           document.getElementById('teksMassal').value = "";
           tutupForm();
         }
-      }).finally(() => { btn.disabled = false; btn.innerText = "Proses Input Massal"; });
+      })
+      .catch(err => {
+        alert("Gagal terhubung ke server.");
+        console.error(err);
+      })
+      .finally(() => { 
+        btn.disabled = false; 
+        btn.innerText = "Proses Input Massal"; 
+      });
     }
 
     function eksekusiHapusArsip() {
@@ -200,23 +201,32 @@
       if (!confirm("Yakin ingin menghapus dan mengarsipkan data tersebut?")) return;
 
       const btn = document.getElementById('btnHapusArsip');
-      btn.disabled = true; btn.innerText = "Menghapus...";
+      btn.disabled = true; 
+      btn.innerText = "Menghapus...";
 
       fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({ action: "hapusArsipSelektif", teksCid: teksCid })
       })
-      .then(r => r.json()).then(res => {
+      .then(r => r.json())
+      .then(res => {
         alert(res.message);
         if(res.status === "success") {
           document.getElementById('listCidHapus').value = "";
           tutupForm();
         }
-      }).finally(() => { btn.disabled = false; btn.innerText = "Eksekusi Hapus & Arsip"; });
+      })
+      .catch(err => {
+        alert("Gagal terhubung ke server.");
+        console.error(err);
+      })
+      .finally(() => { 
+        btn.disabled = false; 
+        btn.innerText = "Eksekusi Hapus & Arsip"; 
+      });
     }
 
     function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
   </script>
-  </div>
 </body>
 </html>

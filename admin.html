@@ -12,9 +12,12 @@
     .card-header-dark { background-color: #0f172a; color: #ffffff; padding: 10px 15px; border-top-left-radius: 8px; border-top-right-radius: 8px; }
     .table-custom { font-size: 0.75rem; vertical-align: middle; }
     .table-custom th { background-color: #0f172a; color: #ffffff; white-space: nowrap; }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: #0f172a; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #1e293b; z-index: 1000; }
-    .nav-item-custom { color: #94a3b8; text-decoration: none; font-size: 0.7rem; text-align: center; }
-    .nav-item-custom.active { color: #38bdf8; font-weight: bold; }
+    
+    /* BOTTOM NAVIGATION BAR SERAGAM */
+    .bottom-app-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid #1e293b; display: flex; justify-content: space-around; padding: 10px 0 12px 0; z-index: 1000; }
+    .nav-link-mobile { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 0.72rem; font-weight: 600; }
+    .nav-link-mobile.active { color: #38bdf8; }
+    .nav-icon { font-size: 1.25rem; margin-bottom: 2px; }
   </style>
 </head>
 <body>
@@ -23,25 +26,21 @@
   <div class="top-bar d-flex justify-content-between align-items-center">
     <div class="fw-bold fs-6">💻 Info Perangkat</div>
     <div class="d-flex align-items-center gap-2">
-      <a href="index.html" class="btn btn-success btn-sm py-1 px-3 fw-bold">📝 Form Lapangan</a>
-      <span class="badge bg-success">● Admin Online</span>
+      <button onclick="bukaModalLaporan()" class="btn btn-warning btn-sm py-1 px-2 fw-bold text-dark" style="font-size:0.75rem;">📊 Laporan</button>
+      <button onclick="bukaModalInput()" class="btn btn-success btn-sm py-1 px-2 fw-bold" style="font-size:0.75rem;">📥 Sistem Input</button>
+      <span class="badge bg-success">● Online</span>
     </div>
   </div>
 
-  <div class="container my-3" style="max-width: 1000px;">
-    <!-- CARD SEARCH -->
+  <div class="container my-3 mb-5" style="max-width: 1000px;">
     <div class="card-custom p-3 mb-3">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <div>
-          <h6 class="fw-bold m-0 text-primary">⚙ Data Info Perangkat Lapangan</h6>
-          <small class="text-muted">Filter berdasarkan Nama, CID, ODP, SN, PSN, atau POP</small>
-        </div>
+        <h6 class="fw-bold m-0 text-primary">⚙ Data Info Perangkat Lapangan</h6>
         <button onclick="loadPerangkatData()" class="btn btn-sm text-white fw-bold" style="background-color: #10b981;">🔄 Muat Data</button>
       </div>
       <input type="text" id="searchPerangkat" class="form-control form-control-sm" placeholder="Ketik kata kunci pencarian..." oninput="filterPerangkat()">
     </div>
 
-    <!-- TABEL DATA PERANGKAT -->
     <div class="card-custom">
       <div class="card-header-dark d-flex justify-content-between align-items-center">
         <span class="fw-bold small">🗄 Daftar Perangkat Terdata</span>
@@ -63,7 +62,23 @@
     </div>
   </div>
 
-  <!-- MODAL POPUP PREVIEW FOTO REAL-TIME -->
+  <!-- BOTTOM NAVIGATION BAR SERAGAM -->
+  <div class="bottom-app-nav">
+    <a href="search.html" class="nav-link-mobile">
+      <div class="nav-icon">🔍</div><span>Sistem Cari</span>
+    </a>
+    <a href="admin.html" class="nav-link-mobile active">
+      <div class="nav-icon">💻</div><span>Info Perangkat</span>
+    </a>
+    <a href="index.html" class="nav-link-mobile">
+      <div class="nav-icon">📝</div><span>Form Lapangan</span>
+    </a>
+    <a href="#" onclick="logout()" class="nav-link-mobile">
+      <div class="nav-icon">👤</div><span>Keluar</span>
+    </a>
+  </div>
+
+  <!-- MODAL PREVIEW FOTO & PANEL -->
   <div id="imageModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white rounded-4 text-center">
@@ -71,27 +86,21 @@
           <h6 class="modal-title text-info" id="imageModalTitle">Preview Foto</h6>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body p-2">
-          <img id="modalImgPreview" src="" class="img-fluid rounded-3" alt="Preview Gambar" style="max-height: 80vh;">
-        </div>
+        <div class="modal-body p-2"><img id="modalImgPreview" src="" class="img-fluid rounded-3" style="max-height: 80vh;"></div>
       </div>
     </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR -->
-  <div class="bottom-nav">
-    <a href="search.html" class="nav-item-custom">
-      <div>🔍</div><span>Sistem Cari</span>
-    </a>
-    <a href="admin.html" class="nav-item-custom active">
-      <div>💻</div><span>Info Perangkat</span>
-    </a>
-    <a href="index.html" class="nav-item-custom">
-      <div>📝</div><span>Form Lapangan</span>
-    </a>
-    <a href="#" onclick="logout()" class="nav-item-custom">
-      <div>👤</div><span>Profil/Keluar</span>
-    </a>
+  <div id="panelModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-dark text-white rounded-4">
+        <div class="modal-header border-secondary">
+          <h6 class="modal-title text-info" id="panelModalTitle">Panel Kontrol</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="panelModalBody"></div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -103,25 +112,15 @@
     function checkAuth() { if (!localStorage.getItem("user_session")) window.location.href = "login.html"; }
 
     function loadPerangkatData() {
-      const tbody = document.getElementById('perangkatTableBody');
-      tbody.innerHTML = '<tr><td colspan="11" class="py-4 text-muted">🔄 Memuat data dari Google Sheets...</td></tr>';
-      fetch(`${SCRIPT_URL}?action=getInfoPerangkat`)
-        .then(r => r.json())
-        .then(res => {
-          if (res.status === "success") { listPerangkat = res.data; renderPerangkat(listPerangkat); }
-          else { tbody.innerHTML = `<tr><td colspan="11" class="text-danger py-4">${res.message}</td></tr>`; }
-        })
-        .catch(err => { tbody.innerHTML = '<tr><td colspan="11" class="text-danger py-4">Gagal terhubung ke Google Sheets.</td></tr>'; });
+      fetch(`${SCRIPT_URL}?action=getInfoPerangkat`).then(r => r.json()).then(res => {
+        if (res.status === "success") { listPerangkat = res.data; renderPerangkat(listPerangkat); }
+      });
     }
 
     function filterPerangkat() {
       const q = document.getElementById('searchPerangkat').value.toLowerCase();
       const filtered = listPerangkat.filter(item => 
-        (item.nama_lama && item.nama_lama.toLowerCase().includes(q)) ||
-        (item.cid_lama && item.cid_lama.toLowerCase().includes(q)) ||
-        (item.sn && item.sn.toLowerCase().includes(q)) ||
-        (item.psn && item.psn.toLowerCase().includes(q)) ||
-        (item.odp && item.odp.toLowerCase().includes(q))
+        item.nama_lama?.toLowerCase().includes(q) || item.cid_lama?.toLowerCase().includes(q) || item.sn?.toLowerCase().includes(q) || item.odp?.toLowerCase().includes(q)
       );
       renderPerangkat(filtered);
     }
@@ -133,32 +132,43 @@
       new bootstrap.Modal(document.getElementById('imageModal')).show();
     }
 
+    function bukaModalLaporan() {
+      document.getElementById('panelModalTitle').innerText = "📊 Sistem Hapus Massal & Arsip";
+      document.getElementById('panelModalBody').innerHTML = `
+        <textarea id="listCidHapus" class="form-control form-control-sm bg-dark text-white mb-2" rows="4" placeholder="Tempel laporan WhatsApp untuk hapus selektif..."></textarea>
+        <button onclick="alert('Parameter hapus terhubung dengan backend.')" class="btn btn-danger btn-sm w-100 fw-bold">Eksekusi Hapus & Arsip</button>
+      `;
+      new bootstrap.Modal(document.getElementById('panelModal')).show();
+    }
+
+    function bukaModalInput() {
+      document.getElementById('panelModalTitle').innerText = "📥 Sistem Input Massal";
+      document.getElementById('panelModalBody').innerHTML = `
+        <textarea id="teksMassal" class="form-control form-control-sm bg-dark text-white mb-2 font-monospace" rows="5" placeholder="Nama : ...\nCID : ..."></textarea>
+        <button onclick="alert('Parameter input massal siap diproses.')" class="btn btn-primary btn-sm w-100 fw-bold">Proses Input Massal</button>
+      `;
+      new bootstrap.Modal(document.getElementById('panelModal')).show();
+    }
+
     function renderPerangkat(data) {
       document.getElementById('badgeTotal').innerText = `${data.length} Data`;
       const tbody = document.getElementById('perangkatTableBody');
       if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="11" class="py-4 text-muted">Data tidak ditemukan.</td></tr>'; return; }
       tbody.innerHTML = data.map(item => `
         <tr>
-          <td>${item.timestamp || '-'}</td>
-          <td>${item.pop || '-'}</td>
-          <td class="fw-bold text-primary">${item.odp || '-'}</td>
-          <td>${item.cid_lama || '-'}</td>
-          <td class="fw-bold">${item.nama_lama || '-'}</td>
-          <td class="text-success fw-bold">${item.sn || '-'}</td>
+          <td>${item.timestamp || '-'}</td><td>${item.pop || '-'}</td>
+          <td class="fw-bold text-primary">${item.odp || '-'}</td><td>${item.cid_lama || '-'}</td>
+          <td class="fw-bold">${item.nama_lama || '-'}</td><td class="text-success fw-bold">${item.sn || '-'}</td>
           <td>${item.psn || '-'}</td>
-          <td>${item.foto_rumah_url ? `<button onclick="showImageModal('${item.foto_rumah_url}', 'Foto Rumah -${item.nama_lama}')" class="btn btn-primary btn-sm py-0 px-2">Lihat</button>` : '-'}</td>
-          <td>${item.foto_alat_url ? `<button onclick="showImageModal('${item.foto_alat_url}', 'Foto Alat -${item.nama_lama}')" class="btn btn-info text-white btn-sm py-0 px-2">Lihat</button>` : '-'}</td>
+          <td>${item.foto_rumah_url ? `<button onclick="showImageModal('${item.foto_rumah_url}', 'Foto Rumah')" class="btn btn-primary btn-sm py-0 px-2">Lihat</button>` : '-'}</td>
+          <td>${item.foto_alat_url ? `<button onclick="showImageModal('${item.foto_alat_url}', 'Foto Alat')" class="btn btn-info text-white btn-sm py-0 px-2">Lihat</button>` : '-'}</td>
           <td>${item.sherlock ? `<a href="https://www.google.com/maps?q=${item.sherlock}" target="_blank">📍 Maps</a>` : '-'}</td>
           <td>${item.keterangan || '-'}</td>
         </tr>
       `).join('');
     }
 
-    function logout() {
-      if (confirm("Apakah Anda yakin ingin keluar?")) {
-        localStorage.removeItem("user_session"); window.location.href = "login.html";
-      }
-    }
+    function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
   </script>
 </body>
 </html>

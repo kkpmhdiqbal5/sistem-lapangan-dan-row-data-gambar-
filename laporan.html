@@ -13,69 +13,23 @@
     
     /* BOTTOM NAVIGATION BAR */
     .bottom-app-nav { 
-      position: fixed; 
-      bottom: 0; 
-      left: 0; 
-      right: 0; 
-      background: #1c2541; 
-      border-top: 1px solid #2a385b; 
-      display: flex; 
-      justify-content: space-around; 
-      align-items: center;
-      padding: 6px 0; 
-      z-index: 1000; 
-      height: 65px;
+      position: fixed; bottom: 0; left: 0; right: 0; 
+      background: #1c2541; border-top: 1px solid #2a385b; 
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 6px 0; z-index: 1000; height: 65px;
     }
-    .nav-link-mobile { 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      text-decoration: none; 
-      color: #94a3b8; 
-      font-size: 0.7rem; 
-      font-weight: 600; 
-      flex: 1;
-    }
-    .nav-link-mobile.active { 
-      color: #38bdf8; 
-    }
-    .nav-icon { 
-      font-size: 1.2rem; 
-      margin-bottom: 2px; 
-    }
+    .nav-link-mobile { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 0.7rem; font-weight: 600; flex: 1; }
+    .nav-link-mobile.active { color: #38bdf8; }
+    .nav-icon { font-size: 1.2rem; margin-bottom: 2px; }
 
-    /* Tombol Form Lapangan di Tengah yang Mencolok */
-    .nav-link-center {
-      position: relative;
-      top: -12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-    }
+    .nav-link-center { position: relative; top: -12px; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
     .nav-center-circle {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: white;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5);
-      border: 3px solid #0b132b;
-      transition: transform 0.2s;
+      background: linear-gradient(135deg, #22c55e, #16a34a); color: white;
+      width: 50px; height: 50px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: 1.5rem;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5); border: 3px solid #0b132b;
     }
-    .nav-link-center:active .nav-center-circle {
-      transform: scale(0.95);
-    }
-    .nav-center-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: #22c55e;
-      margin-top: 2px;
-    }
+    .nav-center-label { font-size: 0.7rem; font-weight: 700; color: #22c55e; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -86,11 +40,11 @@
   </div>
 
   <div class="container px-3">
-    <!-- 2 Tombol Utama -->
+    <!-- Tombol Utama -->
     <div id="menuUtama" class="row g-3">
       <div class="col-12">
         <button onclick="bukaForm('input')" class="btn btn-success w-100 py-3 fw-bold shadow-sm fs-6">
-          📥 Input Data 
+          📥 Input Data (Teks / File)
         </button>
       </div>
       <div class="col-12">
@@ -100,18 +54,28 @@
       </div>
     </div>
 
-    <!-- Form Input Massal (Tersembunyi Awalnya) -->
+    <!-- Form Input Massal & File (Tersembunyi Awalnya) -->
     <div id="formInputMassal" class="card-custom p-3 d-none mt-2">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="text-success fw-bold m-0">📥 Form Input Data Massal</h6>
+        <h6 class="text-success fw-bold m-0">📥 Form Input Data Massal / File</h6>
         <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
       </div>
-      <p class="small text-muted mb-2">Tempel teks laporan harian WhatsApp atau format massal di bawah ini:</p>
+      
+      <!-- Opsi 1: Upload File -->
+      <div class="mb-3">
+        <label class="form-label small text-info fw-bold">Pilih File Teks (.txt):</label>
+        <input type="file" id="fileInput" class="form-control form-control-dark" accept=".txt" onchange="bacaFile(event)">
+      </div>
+
+      <div class="text-center small text-muted mb-2">- ATAU TEMPEL TEKS MANUAL DI BAWAH -</div>
+
+      <!-- Opsi 2: Tempel Manual -->
       <textarea id="teksMassal" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Nama : ...&#10;CID : ...&#10;ODP : ..."></textarea>
-      <button onclick="eksekusiInputMassal()" id="btnInputMassal" class="btn btn-success btn-sm w-100 fw-bold py-2">Proses Input Massal</button>
+      
+      <button onclick="eksekusiInputMassal()" id="btnInputMassal" class="btn btn-success btn-sm w-100 fw-bold py-2">Proses Input Data</button>
     </div>
 
-    <!-- Form Hapus & Arsip (Tersembunyi Awalnya) -->
+    <!-- Form Hapus & Arsip -->
     <div id="formHapusArsip" class="card-custom p-3 d-none mt-2">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <h6 class="text-danger fw-bold m-0">🗑 Form Hapus & Arsip Selektif</h6>
@@ -128,17 +92,13 @@
     <a href="search.html" class="nav-link-mobile">
       <div class="nav-icon">🔍</div><span>Cari</span>
     </a>
-    
     <a href="admin.html" class="nav-link-mobile">
       <div class="nav-icon">💻</div><span>Perangkat</span>
     </a>
-
-    <!-- Tombol Form Lapangan di Tengah & Paling Mencolok -->
     <a href="index.html" class="nav-link-center">
       <div class="nav-center-circle">📝</div>
       <span class="nav-center-label">Form Lapangan</span>
     </a>
-
     <a href="laporan.html" class="nav-link-mobile active">
       <div class="nav-icon">📊</div><span>Laporan</span>
     </a>
@@ -165,9 +125,20 @@
       document.getElementById('menuUtama').classList.remove('d-none');
     }
 
+    // Fungsi membaca isi file teks yang diunggah
+    function bacaFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('teksMassal').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
     function eksekusiInputMassal() {
       const teks = document.getElementById('teksMassal').value;
-      if (!teks) { alert("Teks input masih kosong!"); return; }
+      if (!teks) { alert("Teks atau file input masih kosong!"); return; }
       
       const btn = document.getElementById('btnInputMassal');
       btn.disabled = true; 
@@ -175,13 +146,14 @@
 
       fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "inputMassal", teks: teks })
+        body: JSON.stringify({ action: "inputMassalFile", teks: teks })
       })
       .then(r => r.json())
       .then(res => {
         alert(res.message);
         if(res.status === "success") {
           document.getElementById('teksMassal').value = "";
+          document.getElementById('fileInput').value = "";
           tutupForm();
         }
       })
@@ -191,7 +163,7 @@
       })
       .finally(() => { 
         btn.disabled = false; 
-        btn.innerText = "Proses Input Massal"; 
+        btn.innerText = "Proses Input Data"; 
       });
     }
 

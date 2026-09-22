@@ -23,6 +23,72 @@
     .nav-link-mobile { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 0.72rem; font-weight: 600; }
     .nav-link-mobile.active { color: #38bdf8; }
     .nav-icon { font-size: 1.25rem; margin-bottom: 2px; }
+
+    /* BOTTOM NAVIGATION BAR DENGAN TOMBOL TENGAH MENCOLOK */
+.bottom-app-nav { 
+  position: fixed; 
+  bottom: 0; 
+  left: 0; 
+  right: 0; 
+  background: #1c2541; 
+  border-top: 1px solid #2a385b; 
+  display: flex; 
+  justify-content: space-around; 
+  align-items: center;
+  padding: 6px 0; 
+  z-index: 1000; 
+  height: 65px;
+}
+.nav-link-mobile { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  text-decoration: none; 
+  color: #94a3b8; 
+  font-size: 0.7rem; 
+  font-weight: 600; 
+  flex: 1;
+}
+.nav-link-mobile.active { 
+  color: #38bdf8; 
+}
+.nav-icon { 
+  font-size: 1.2rem; 
+  margin-bottom: 2px; 
+}
+
+/* Tombol Form Lapangan di Tengah yang Mencolok */
+.nav-link-center {
+  position: relative;
+  top: -12px; /* Membuat tombol sedikit naik ke atas */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+}
+.nav-center-circle {
+  background: linear-gradient(135deg, #22c55e, #16a34a); /* Warna hijau terang mencolok */
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5); /* Efek cahaya/shadow */
+  border: 3px solid #0b132b;
+  transition: transform 0.2s;
+}
+.nav-link-center:active .nav-center-circle {
+  transform: scale(0.95);
+}
+.nav-center-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #22c55e;
+  margin-top: 2px;
+}
   </style>
 </head>
 <body>

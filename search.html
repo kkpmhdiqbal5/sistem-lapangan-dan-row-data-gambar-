@@ -298,6 +298,29 @@
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`, '_blank');
     }
 
+
+    function loadData() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-warning fw-bold">⏳ Sedang mengambil data dari server... Mohon tunggu.</td></tr>';
+
+      fetch(`${SCRIPT_URL}?action=getDataAdmin`)
+        .then(r => r.json())
+        .then(res => {
+          console.log("Respon Data Server:", res); // Cek log di F12
+          if (res.status === "success") { 
+            rawDataList = res.data; 
+            applyFilters(); 
+          } else {
+            tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-danger">Gagal mengambil data: ${res.message}</td></tr>`;
+          }
+        })
+        .catch(err => {
+          console.error("Error Koneksi:", err);
+          tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-danger fw-bold">❌ Gagal terhubung ke Google Script. Pastikan URL benar dan sudah di-Deploy (Akses: Anyone).</td></tr>`;
+        });
+    }
+
+    
     function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
   </script>
 </body>

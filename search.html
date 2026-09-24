@@ -211,18 +211,47 @@
 
     function applyFilters() {
       const sheetVal = document.getElementById('filterSheet').value;
+      const kriteriaVal = document.getElementById('filterKriteria').value; 
+      const tanggalVal = document.getElementById('filterTanggal').value; // Mengambil nilai dari filter tanggal
       const searchVal = document.getElementById('filterSearch').value.toLowerCase();
 
       filteredDataList = rawDataList.filter(row => {
+        // 1. Filter Sheet
         let matchSheet = (sheetVal === "ALL") || (row.sumber_sheet === sheetVal);
-        let matchSearch = !searchVal || (
-          row.nama_lama?.toLowerCase().includes(searchVal) || 
-          row.cid_lama?.toLowerCase().includes(searchVal) || 
-          row.odp?.toLowerCase().includes(searchVal) || 
-          row.sn?.toLowerCase().includes(searchVal)
-        );
-        return matchSheet && matchSearch;
+        
+        // 2. Filter Tanggal (mencocokkan string YYYY-MM-DD dari input dengan timestamp)
+        let matchTanggal = true;
+        if (tanggalVal) {
+          matchTanggal = row.timestamp && row.timestamp.includes(tanggalVal);
+        }
+
+        // 3. Filter Kriteria Pencarian Spesifik
+        let matchSearch = true;
+        if (searchVal) {
+          if (kriteriaVal === "CID") {
+            matchSearch = row.cid_lama?.toLowerCase().includes(searchVal) || row.nama_lama?.toLowerCase().includes(searchVal);
+          } else if (kriteriaVal === "ODP") {
+            matchSearch = row.odp?.toLowerCase().includes(searchVal);
+          } else if (kriteriaVal === "POP") {
+            matchSearch = row.pop?.toLowerCase().includes(searchVal);
+          } else if (kriteriaVal === "PERANGKAT") {
+            matchSearch = row.sn?.toLowerCase().includes(searchVal) || row.psn?.toLowerCase().includes(searchVal);
+          } else {
+            // Jika memilih "Semua Kriteria" (ALL)
+            matchSearch = (
+              row.nama_lama?.toLowerCase().includes(searchVal) || 
+              row.cid_lama?.toLowerCase().includes(searchVal) || 
+              row.odp?.toLowerCase().includes(searchVal) || 
+              row.pop?.toLowerCase().includes(searchVal) ||
+              row.sn?.toLowerCase().includes(searchVal) ||
+              row.psn?.toLowerCase().includes(searchVal)
+            );
+          }
+        }
+
+        return matchSheet && matchTanggal && matchSearch;
       });
+      
       renderTable(filteredDataList);
     }
 

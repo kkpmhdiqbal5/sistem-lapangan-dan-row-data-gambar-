@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laporan & Sistem Input - Sistem Lapangan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Pustaka Mammoth.js untuk membaca file .docx -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <style>
     body { background-color: #0b132b; color: #e0e6ed; font-family: 'Segoe UI', sans-serif; padding-bottom: 85px; }
     .top-bar { background-color: #1c2541; padding: 14px 20px; border-bottom: 1px solid #2a385b; }
     .card-custom { background-color: #1c2541; border: 1px solid #2a385b; border-radius: 12px; }
-    .form-control-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
+    .form-control-dark, .form-select-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
+    .form-control-dark:focus, .form-select-dark:focus { background-color: #0b132b; color: #fff; border-color: #38bdf8; box-shadow: none; }
     
     /* BOTTOM NAVIGATION BAR */
     .bottom-app-nav { 
@@ -37,7 +36,7 @@
 <body>
 
   <div class="top-bar d-flex justify-content-between align-items-center mb-4">
-    <div class="fw-bold fs-5 text-white">📊 Pusat Laporan & Sistem Input</div>
+    <div class="fw-bold fs-6 text-white">📊 Pusat Laporan & Sistem Input</div>
     <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
   </div>
 
@@ -46,47 +45,77 @@
     <div id="menuUtama" class="row g-3">
       <div class="col-12">
         <button onclick="bukaForm('input')" class="btn btn-success w-100 py-3 fw-bold shadow-sm fs-6">
-          📥 Input Data (File / Teks Manual)
+          📥 Input Data Massal
         </button>
       </div>
       <div class="col-12">
         <button onclick="bukaForm('hapus')" class="btn btn-danger w-100 py-3 fw-bold shadow-sm fs-6">
-          🗑 LAPORAN (Hapus & Arsip)
+          🗑 Laporan (Hapus & Arsip WA)
+        </button>
+      </div>
+      <div class="col-12">
+        <button onclick="bukaForm('mutasi')" class="btn btn-warning w-100 py-3 fw-bold shadow-sm fs-6 text-dark">
+          🔄 Mutasi Data Antar Sheet
         </button>
       </div>
     </div>
 
-    <!-- Form Input Massal & File -->
+    <!-- Form Input Massal -->
     <div id="formInputMassal" class="card-custom p-3 d-none mt-2">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="text-success fw-bold m-0">📥 Form Input Data (.txt / .docx / Manual)</h6>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="text-success fw-bold m-0">📥 Form Input Data Massal</h6>
         <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
       </div>
-      
-      <!-- Upload File -->
       <div class="mb-3">
-        <label class="form-label small text-info fw-bold">Pilih File (.txt atau .docx):</label>
-        <input type="file" id="fileInput" class="form-control form-control-dark" accept=".txt,.docx" onchange="bacaFile(event)">
+        <label class="form-label small text-info fw-bold">Pilih File (.txt):</label>
+        <input type="file" id="fileInput" class="form-control form-control-dark" accept=".txt" onchange="bacaFile(event)">
       </div>
-
-      <div class="text-center small text-muted mb-2">- ATAU TEMPEL TEKS MANUAL DI BAWAH -</div>
-
-      <!-- Textarea Manual -->
-      <textarea id="teksMassal" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Nama : ...&#10;CID : ...&#10;ODP : ..."></textarea>
-      
+      <textarea id="teksMassal" class="form-control form-control-dark font-monospace mb-3" rows="6" placeholder="Atau ketik/tempel data di sini...&#10;Contoh:&#10;Nama : Budi&#10;CID : 1234567890&#10;ODP : ODP-01"></textarea>
       <button onclick="eksekusiInputMassal()" id="btnInputMassal" class="btn btn-success btn-sm w-100 fw-bold py-2">Proses Input Data</button>
     </div>
 
-    <!-- Form Hapus & Arsip -->
+    <!-- Form Hapus & Arsip WA -->
     <div id="formHapusArsip" class="card-custom p-3 d-none mt-2">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="text-danger fw-bold m-0">🗑 Form Hapus & Arsip Selektif</h6>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="text-danger fw-bold m-0">🗑 Form Hapus & Arsip Laporan</h6>
         <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
       </div>
-      <p class="small text-muted mb-2">Tempel daftar CID atau nama yang ingin dihapus dan diarsipkan otomatis:</p>
-      <textarea id="listCidHapus" class="form-control form-control-dark font-monospace mb-3" rows="5" placeholder="Tempel CID atau format laporan WA di sini..."></textarea>
+      <p class="small text-muted mb-2">Tempel rekap laporan WhatsApp di bawah ini:</p>
+      <textarea id="listCidHapus" class="form-control form-control-dark font-monospace mb-3" rows="8" placeholder="Contoh:&#10;An : Budi&#10;Cid : 1234567890&#10;Sn : DF1D-1234&#10;Odp : ODP-01&#10;Ket : Perangkat ditarik"></textarea>
       <button onclick="eksekusiHapusArsip()" id="btnHapusArsip" class="btn btn-danger btn-sm w-100 fw-bold py-2">Eksekusi Hapus & Arsip</button>
     </div>
+
+    <!-- Form Mutasi Data Antar Sheet -->
+    <div id="formMutasi" class="card-custom p-3 d-none mt-2">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="text-warning fw-bold m-0">🔄 Form Mutasi Data Spesifik</h6>
+        <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label class="form-label small text-secondary fw-bold mb-1">DARI SHEET</label>
+          <select id="dariSheet" class="form-select form-select-dark">
+            <option value="Full Data">Full Data</option>
+            <option value="target">target</option>
+            <option value="Baris 1">Baris 1</option>
+            <option value="sudah diambil">sudah diambil</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label small text-secondary fw-bold mb-1">KE SHEET</label>
+          <select id="keSheet" class="form-select form-select-dark">
+            <option value="sudah diambil">sudah diambil</option>
+            <option value="Baris 1">Baris 1</option>
+            <option value="target">target</option>
+            <option value="Full Data">Full Data</option>
+          </select>
+        </div>
+      </div>
+      <p class="small text-muted mb-2">Tempel deretan nomor CID yang ingin dipindah:</p>
+      <textarea id="listCidMutasi" class="form-control form-control-dark font-monospace mb-3" rows="6" placeholder="Contoh:&#10;266170665829&#10;266129166760"></textarea>
+      <button onclick="eksekusiMutasi()" id="btnMutasi" class="btn btn-warning text-dark btn-sm w-100 fw-bold py-2">Proses Mutasi Data</button>
+    </div>
+
   </div>
 
   <!-- BOTTOM NAVIGATION BAR -->
@@ -107,121 +136,122 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec";
+    // GANTI DENGAN URL DEPLOYMENT APPS SCRIPT ANDA
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec"; 
+
+    if (!localStorage.getItem("user_session")) {
+      window.location.href = "login.html";
+    }
 
     function bukaForm(jenis) {
       document.getElementById('menuUtama').classList.add('d-none');
       document.getElementById('formInputMassal').classList.add('d-none');
       document.getElementById('formHapusArsip').classList.add('d-none');
+      document.getElementById('formMutasi').classList.add('d-none');
 
-      if (jenis === 'input') {
-        document.getElementById('formInputMassal').classList.remove('d-none');
-      } else if (jenis === 'hapus') {
-        document.getElementById('formHapusArsip').classList.remove('d-none');
-      }
+      if (jenis === 'input') document.getElementById('formInputMassal').classList.remove('d-none');
+      else if (jenis === 'hapus') document.getElementById('formHapusArsip').classList.remove('d-none');
+      else if (jenis === 'mutasi') document.getElementById('formMutasi').classList.remove('d-none');
     }
 
     function tutupForm() {
       document.getElementById('formInputMassal').classList.add('d-none');
       document.getElementById('formHapusArsip').classList.add('d-none');
+      document.getElementById('formMutasi').classList.add('d-none');
       document.getElementById('menuUtama').classList.remove('d-none');
     }
 
-    // Pembaca File Otomatis (.txt / .docx)
     function bacaFile(event) {
       const file = event.target.files[0];
       if (!file) return;
-
-      const fileName = file.name.toLowerCase();
-
-      if (fileName.endsWith('.txt')) {
+      if (file.name.toLowerCase().endsWith('.txt')) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('teksMassal').value = e.target.result;
-        };
+        reader.onload = e => document.getElementById('teksMassal').value = e.target.result;
         reader.readAsText(file);
-      } 
-      else if (fileName.endsWith('.docx')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const arrayBuffer = e.target.result;
-          mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-            .then(function(result) {
-              document.getElementById('teksMassal').value = result.value;
-            })
-            .catch(function(err) {
-              alert("Gagal membaca file Word (.docx): " + err);
-            });
-        };
-        reader.readAsArrayBuffer(file);
       } else {
-        alert("Format file tidak didukung! Harap gunakan .txt atau .docx");
+        alert("Hanya format .txt yang didukung untuk saat ini!");
       }
     }
 
     function eksekusiInputMassal() {
       const teks = document.getElementById('teksMassal').value;
-      if (!teks) { alert("Teks atau file input masih kosong!"); return; }
+      if (!teks.trim()) { alert("Teks input masih kosong!"); return; }
       
       const btn = document.getElementById('btnInputMassal');
-      btn.disabled = true; 
-      btn.innerText = "Memproses...";
-
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "inputMassalFile", teks: teks })
+      btn.disabled = true; btn.innerText = "Memproses Input...";
+      
+      fetch(SCRIPT_URL, { 
+        method: "POST", 
+        body: JSON.stringify({ action: "inputMassalFile", teks: teks }) 
       })
       .then(r => r.json())
-      .then(res => {
-        alert(res.message);
+      .then(res => { 
+        alert(res.message); 
         if(res.status === "success") {
           document.getElementById('teksMassal').value = "";
-          document.getElementById('fileInput').value = "";
-          tutupForm();
+          tutupForm(); 
         }
       })
-      .catch(err => {
-        alert("Gagal terhubung ke server.");
-        console.error(err);
-      })
-      .finally(() => { 
-        btn.disabled = false; 
-        btn.innerText = "Proses Input Data"; 
-      });
+      .catch(err => alert("Terjadi kesalahan koneksi!"))
+      .finally(() => { btn.disabled = false; btn.innerText = "Proses Input Data"; });
     }
 
-function eksekusiHapusArsip() {
+    function eksekusiHapusArsip() {
       const teksCid = document.getElementById('listCidHapus').value;
-      if (!teksCid) { alert("Teks rekap laporan masih kosong!"); return; }
-      if (!confirm("Yakin ingin memproses penghapusan & pengarsipan data ini?")) return;
-
+      if (!teksCid.trim()) { alert("Teks rekap laporan masih kosong!"); return; }
+      
       const btn = document.getElementById('btnHapusArsip');
-      btn.disabled = true; 
-      btn.innerText = "Memproses...";
+      btn.disabled = true; btn.innerText = "Memproses Arsip...";
+      
+      fetch(SCRIPT_URL, { 
+        method: "POST", 
+        body: JSON.stringify({ action: "hapusArsipSelektif", teksCid: teksCid }) 
+      })
+      .then(r => r.json())
+      .then(res => { 
+        alert(res.message); 
+        if(res.status === "success") {
+          document.getElementById('listCidHapus').value = "";
+          tutupForm(); 
+        }
+      })
+      .catch(err => alert("Terjadi kesalahan koneksi!"))
+      .finally(() => { btn.disabled = false; btn.innerText = "Eksekusi Hapus & Arsip"; });
+    }
+
+    function eksekusiMutasi() {
+      const dariSheet = document.getElementById('dariSheet').value;
+      const keSheet = document.getElementById('keSheet').value;
+      const teksCid = document.getElementById('listCidMutasi').value;
+
+      if (!teksCid.trim()) { alert("Daftar CID masih kosong!"); return; }
+      if (dariSheet === keSheet) { alert("Sheet asal dan tujuan tidak boleh sama!"); return; }
+      
+      if (!confirm(`Yakin ingin memindahkan data dari sheet '${dariSheet}' ke '${keSheet}'?`)) return;
+
+      const btn = document.getElementById('btnMutasi');
+      btn.disabled = true; btn.innerText = "Memproses Mutasi...";
 
       fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "hapusArsipSelektif", teksCid: teksCid })
+        body: JSON.stringify({ action: "mutasiData", dariSheet: dariSheet, keSheet: keSheet, teksCid: teksCid })
       })
       .then(r => r.json())
       .then(res => {
         alert(res.message);
         if(res.status === "success") {
-          document.getElementById('listCidHapus').value = "";
+          document.getElementById('listCidMutasi').value = "";
           tutupForm();
         }
       })
-      .catch(err => {
-        alert("Gagal terhubung ke server.");
-        console.error(err);
-      })
-      .finally(() => { 
-        btn.disabled = false; 
-        btn.innerText = "Eksekusi Hapus & Arsip"; 
-      });
+      .catch(err => alert("Gagal terhubung ke server."))
+      .finally(() => { btn.disabled = false; btn.innerText = "Proses Mutasi Data"; });
     }
 
-    function logout() { localStorage.removeItem("user_session"); window.location.href = "login.html"; }
+    function logout() { 
+      localStorage.removeItem("user_session"); 
+      window.location.href = "login.html"; 
+    }
   </script>
 </body>
 </html>

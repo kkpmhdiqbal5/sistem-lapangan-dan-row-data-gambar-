@@ -12,7 +12,6 @@
     .form-control-dark, .form-select-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
     .form-control-dark:focus, .form-select-dark:focus { background-color: #0b132b; color: #fff; border-color: #38bdf8; box-shadow: none; }
     
-    /* BOTTOM NAVIGATION BAR */
     .bottom-app-nav { 
       position: fixed; bottom: 0; left: 0; right: 0; 
       background: #1c2541; border-top: 1px solid #2a385b; 
@@ -91,7 +90,8 @@
         <h6 class="text-warning fw-bold m-0">🔄 Form Mutasi Data Spesifik</h6>
         <button onclick="tutupForm()" class="btn btn-sm btn-outline-light py-0 px-2">✕ Tutup</button>
       </div>
-      <div class="row g-2 mb-3">
+      
+      <div class="row g-2 mb-2">
         <div class="col-6">
           <label class="form-label small text-secondary fw-bold mb-1">DARI SHEET</label>
           <select id="dariSheet" class="form-select form-select-dark">
@@ -111,8 +111,24 @@
           </select>
         </div>
       </div>
-      <p class="small text-muted mb-2">Tempel deretan nomor CID yang ingin dipindah:</p>
-      <textarea id="listCidMutasi" class="form-control form-control-dark font-monospace mb-3" rows="6" placeholder="Contoh:&#10;266170665829&#10;266129166760"></textarea>
+
+      <!-- DROPDOWN KRITERIA DIPERBARUI SESUAI PERMINTAAN -->
+      <div class="mb-3">
+        <label class="form-label small text-warning fw-bold mb-1">BERDASARKAN KRITERIA</label>
+        <select id="kriteriaMutasi" class="form-select form-select-dark border-warning">
+          <option value="NAMA">NAMA / Nama Pelanggan</option>
+          <option value="CID" selected>CID / Nomor Pelanggan</option>
+          <option value="SALES">SALES / Nama Sales</option>
+          <option value="POP">POP / Area</option>
+          <option value="ODP">ODP (Nama Tiang)</option>
+          <option value="SN">SN / Serial Number</option>
+          <option value="P-SN">P-SN (SN Pendek)</option>
+        </select>
+      </div>
+
+      <p class="small text-muted mb-2">Tempel deretan data yang ingin dipindah (sesuai kriteria di atas):</p>
+      <textarea id="listCidMutasi" class="form-control form-control-dark font-monospace mb-3" rows="6" placeholder="Contoh deretan ke bawah:&#10;Data 1&#10;Data 2&#10;Data 3"></textarea>
+      
       <button onclick="eksekusiMutasi()" id="btnMutasi" class="btn btn-warning text-dark btn-sm w-100 fw-bold py-2">Proses Mutasi Data</button>
     </div>
 
@@ -180,17 +196,11 @@
       const btn = document.getElementById('btnInputMassal');
       btn.disabled = true; btn.innerText = "Memproses Input...";
       
-      fetch(SCRIPT_URL, { 
-        method: "POST", 
-        body: JSON.stringify({ action: "inputMassalFile", teks: teks }) 
-      })
+      fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "inputMassalFile", teks: teks }) })
       .then(r => r.json())
       .then(res => { 
         alert(res.message); 
-        if(res.status === "success") {
-          document.getElementById('teksMassal').value = "";
-          tutupForm(); 
-        }
+        if(res.status === "success") { document.getElementById('teksMassal').value = ""; tutupForm(); }
       })
       .catch(err => alert("Terjadi kesalahan koneksi!"))
       .finally(() => { btn.disabled = false; btn.innerText = "Proses Input Data"; });
@@ -203,17 +213,11 @@
       const btn = document.getElementById('btnHapusArsip');
       btn.disabled = true; btn.innerText = "Memproses Arsip...";
       
-      fetch(SCRIPT_URL, { 
-        method: "POST", 
-        body: JSON.stringify({ action: "hapusArsipSelektif", teksCid: teksCid }) 
-      })
+      fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "hapusArsipSelektif", teksCid: teksCid }) })
       .then(r => r.json())
       .then(res => { 
         alert(res.message); 
-        if(res.status === "success") {
-          document.getElementById('listCidHapus').value = "";
-          tutupForm(); 
-        }
+        if(res.status === "success") { document.getElementById('listCidHapus').value = ""; tutupForm(); }
       })
       .catch(err => alert("Terjadi kesalahan koneksi!"))
       .finally(() => { btn.disabled = false; btn.innerText = "Eksekusi Hapus & Arsip"; });
@@ -222,19 +226,26 @@
     function eksekusiMutasi() {
       const dariSheet = document.getElementById('dariSheet').value;
       const keSheet = document.getElementById('keSheet').value;
+      const kriteriaMutasi = document.getElementById('kriteriaMutasi').value; 
       const teksCid = document.getElementById('listCidMutasi').value;
 
-      if (!teksCid.trim()) { alert("Daftar CID masih kosong!"); return; }
+      if (!teksCid.trim()) { alert("Daftar data masih kosong!"); return; }
       if (dariSheet === keSheet) { alert("Sheet asal dan tujuan tidak boleh sama!"); return; }
       
-      if (!confirm(`Yakin ingin memindahkan data dari sheet '${dariSheet}' ke '${keSheet}'?`)) return;
+      if (!confirm(`Yakin ingin memindahkan data dari '${dariSheet}' ke '${keSheet}' berdasarkan ${kriteriaMutasi}?`)) return;
 
       const btn = document.getElementById('btnMutasi');
       btn.disabled = true; btn.innerText = "Memproses Mutasi...";
 
       fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "mutasiData", dariSheet: dariSheet, keSheet: keSheet, teksCid: teksCid })
+        body: JSON.stringify({ 
+          action: "mutasiData", 
+          dariSheet: dariSheet, 
+          keSheet: keSheet, 
+          kriteria: kriteriaMutasi, 
+          teksCid: teksCid 
+        })
       })
       .then(r => r.json())
       .then(res => {

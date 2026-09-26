@@ -98,6 +98,7 @@
             <option value="Full Data">Full Data</option>
             <option value="target">target</option>
             <option value="Baris 1">Baris 1</option>
+            <option value="Baris 2">Baris 2</option>
             <option value="sudah diambil">sudah diambil</option>
           </select>
         </div>
@@ -105,6 +106,7 @@
           <label class="form-label small text-secondary fw-bold mb-1">KE SHEET</label>
           <select id="keSheet" class="form-select form-select-dark">
             <option value="sudah diambil">sudah diambil</option>
+            <option value="Baris 2">Baris 2</option>
             <option value="Baris 1">Baris 1</option>
             <option value="target">target</option>
             <option value="Full Data">Full Data</option>
@@ -112,7 +114,6 @@
         </div>
       </div>
 
-      <!-- DROPDOWN KRITERIA DIPERBARUI SESUAI PERMINTAAN -->
       <div class="mb-3">
         <label class="form-label small text-warning fw-bold mb-1">BERDASARKAN KRITERIA</label>
         <select id="kriteriaMutasi" class="form-select form-select-dark border-warning">
@@ -153,7 +154,7 @@
 
   <script>
     // GANTI DENGAN URL DEPLOYMENT APPS SCRIPT ANDA
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMD25/exec"; 
 
     if (!localStorage.getItem("user_session")) {
       window.location.href = "login.html";

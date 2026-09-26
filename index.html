@@ -188,6 +188,12 @@
     <div class="mobile-card p-3">
       <form id="fieldForm">
         
+        <!-- NAMA TS / TEKNISI (BARU) -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-primary mb-1">NAMA TS / TEKNISI *</label>
+          <input type="text" id="nama_ts" name="nama_ts" class="form-control form-control-mobile" style="border-color: #0284c7;" placeholder="Ketik nama Anda..." required>
+        </div>
+
         <!-- SHERLOCK KOORDINAT -->
         <div class="mb-3">
           <label class="form-label small fw-bold text-secondary mb-1">KOORDINAT TERDETEKSI OTOMATIS</label>
@@ -200,7 +206,7 @@
           <input type="text" id="odp" name="odp" class="form-control form-control-mobile" placeholder="Ketik ODP" required>
         </div>
 
-        <!-- POP (KHUSUS: PERBAUNGAN & PANTAI CERMIN) -->
+        <!-- POP -->
         <div class="mb-3">
           <label class="form-label small fw-bold text-secondary mb-1">POP *</label>
           <select id="pop" name="pop" class="form-select form-select-mobile" required>
@@ -281,7 +287,7 @@
         <!-- KETERANGAN -->
         <div class="mb-4">
           <label class="form-label small fw-bold text-secondary mb-1">KETERANGAN (OPSIONAL)</label>
-          <textarea id="keterangan" name="keterangan" class="form-control form-control-mobile" rows="2" placeholder="Catatan kendala..."></textarea>
+          <textarea id="keterangan" name="keterangan" class="form-control form-control-mobile" rows="2" placeholder="Kosongkan jika ingin teks default otomatis: 'Perangkat Sudah Diambil Dan Port Sudah Di Cabut'"></textarea>
         </div>
 
         <!-- SUBMIT BUTTON -->
@@ -295,7 +301,20 @@
   </div>
 
   <!-- BOTTOM NAVIGATION BAR MOBILE APP -->
- 
+  <div class="bottom-app-nav">
+    <a href="search.html" class="nav-link-mobile">
+      <div class="nav-icon">🔍</div><span>Cari</span>
+    </a>
+    <a href="admin.html" class="nav-link-mobile">
+      <div class="nav-icon">💻</div><span>Perangkat</span>
+    </a>
+    <a href="index.html" class="nav-link-mobile active">
+      <div class="nav-icon">📝</div><span>Form</span>
+    </a>
+    <a href="laporan.html" class="nav-link-mobile">
+      <div class="nav-icon">📊</div><span>Laporan</span>
+    </a>
+  </div>
 
   <!-- MODAL LIVE CAMERA SCANNER -->
   <div id="scannerModal" class="modal fade" tabindex="-1" data-bs-backdrop="static">
@@ -445,6 +464,9 @@
       const formData = new FormData(this);
       const data = {};
       formData.forEach((value, key) => data[key] = value);
+      
+      // Tambahkan instruksi action agar backend tahu ini adalah input form lapangan
+      data.action = "formLapangan";
 
       fetch(SCRIPT_URL, {
         method: "POST",
@@ -454,7 +476,16 @@
       .then(res => {
         if(res.status === "success") {
           alert("✅ Data Lapangan Berhasil Diterima!");
+          
+          // Simpan sementara nama TS agar tidak perlu diketik ulang
+          const namaTsSementara = document.getElementById('nama_ts').value;
+          
+          // Reset form
           this.reset();
+          
+          // Kembalikan nama TS
+          document.getElementById('nama_ts').value = namaTsSementara;
+          
           document.getElementById('statusFotoRumah').innerText = "Belum Ada Foto";
           document.getElementById('statusFotoRumah').className = "small text-warning fw-bold";
           document.getElementById('thumbFotoRumah').classList.add('d-none');

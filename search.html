@@ -261,47 +261,59 @@
             checkboxes.forEach(cb => cb.checked = masterObj.checked);
         }
 
-        function kirimWASatu(index) {
-            let row = filteredDataList[index];
-            let namaTS = row.ts || row.sales || "-"; 
+       // ============================================
+    // KIRIM WHATSAPP SATUAN (SESUAI TEMPLAT)
+    // ============================================
+    function kirimWASatu(index) {
+        let row = filteredDataList[index];
+        let mapsUrl = row.sherlock && row.sherlock !== "-" ? (row.sherlock.includes('http') ? row.sherlock : 'https://www.google.com/maps?q=' + row.sherlock) : "-";
+        
+        let teksWA = 
+`📋 *REKAP DATA LAPANGAN*
+====================================
+
+*1. ${row.nama_lama || "-"}*
+* ODP: ${row.odp || "-"}
+* POP: ${row.pop || "-"}
+* CID: ${row.cid_lama || "-"}
+* SN: ${row.sn || "-"}
+* Sheet: ${row.sumber_sheet || "-"}
+* Ket: ${row.keterangan || "-"}
+📍 Sherlock: ${mapsUrl}
+🖼️ Foto Rumah: ${row.foto_rumah_url || "-"}
+🖼️ Foto Alat: ${row.foto_alat_url || "-"}`;
+
+        window.open(`https://wa.me/?text=${encodeURIComponent(teksWA)}`, '_blank');
+    }
+
+    // ============================================
+    // KIRIM WHATSAPP GABUNGAN (SESUAI TEMPLAT)
+    // ============================================
+    function kirimWAGabungan() {
+        let checkboxes = document.querySelectorAll('.row-check:checked');
+        if (checkboxes.length === 0) return alert("Silakan centang data yang ingin dikirim via WhatsApp terlebih dahulu!");
+
+        let teksWA = `📋 *REKAP GABUNGAN (${checkboxes.length} DATA LAPANGAN)*\n====================================\n\n`;
+        
+        checkboxes.forEach((cb, i) => {
+            let row = filteredDataList[cb.value];
+            let mapsUrl = row.sherlock && row.sherlock !== "-" ? (row.sherlock.includes('http') ? row.sherlock : 'https://www.google.com/maps?q=' + row.sherlock) : "-";
             
-            let teksWA = 
-`Nama : ${row.nama_lama || "-"}
-CID  : ${row.cid_lama || "-"}
-No HP: ${row.nohp || "-"}
-ODP  : ${row.odp || "-"}
-POP  : ${row.pop || "-"}
-SN   : ${row.sn || "-"}
-P-SN : ${row.psn || "-"}
-KET  : ${row.keterangan || "-"}
-TS   : ${namaTS}`;
-
-            window.open(`https://wa.me/?text=${encodeURIComponent(teksWA)}`, '_blank');
-        }
-
-        function kirimWAGabungan() {
-            let checkboxes = document.querySelectorAll('.row-check:checked');
-            if (checkboxes.length === 0) return alert("Silakan centang data yang ingin dikirim via WhatsApp terlebih dahulu!");
-
-            let teksWA = "";
-            checkboxes.forEach((cb) => {
-                let row = filteredDataList[cb.value];
-                let namaTS = row.ts || row.sales || "-";
-                
-                teksWA += 
-`Nama : ${row.nama_lama || "-"}
-CID  : ${row.cid_lama || "-"}
-No HP: ${row.nohp || "-"}
-ODP  : ${row.odp || "-"}
-POP  : ${row.pop || "-"}
-SN   : ${row.sn || "-"}
-P-SN : ${row.psn || "-"}
-KET  : ${row.keterangan || "-"}
-TS   : ${namaTS}\n\n`;
-            });
-            
-            window.open(`https://wa.me/?text=${encodeURIComponent(teksWA.trim())}`, '_blank');
-        }
+            teksWA += 
+`*${i + 1}. ${row.nama_lama || "-"}*
+* ODP: ${row.odp || "-"}
+* POP: ${row.pop || "-"}
+* CID: ${row.cid_lama || "-"}
+* SN: ${row.sn || "-"}
+* Sheet: ${row.sumber_sheet || "-"}
+* Ket: ${row.keterangan || "-"}
+📍 Sherlock: ${mapsUrl}
+🖼️ Foto Rumah: ${row.foto_rumah_url || "-"}
+🖼️ Foto Alat: ${row.foto_alat_url || "-"}\n\n`;
+        });
+        
+        window.open(`https://wa.me/?text=${encodeURIComponent(teksWA.trim())}`, '_blank');
+    }
 
         function logout() {
             localStorage.clear();

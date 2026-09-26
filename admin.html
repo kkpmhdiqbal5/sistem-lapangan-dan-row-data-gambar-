@@ -19,8 +19,6 @@
     .table-custom { color: #e0e6ed !important; font-size: 0.8rem; white-space: nowrap; }
     .table-custom th { background-color: #2a385b !important; color: #ffffff !important; border-bottom: none; text-align: center; vertical-align: middle; }
     .table-custom td { border-bottom: 1px solid #2a385b !important; background-color: #1c2541 !important; color: #e0e6ed !important; vertical-align: middle; text-align: center; }
-    
-    .verified-row td { background-color: #059669 !important; color: #ffffff !important; font-weight: bold !important; border-color: #047857 !important; }
 
     /* BOTTOM NAVIGATION BAR */
     .bottom-app-nav { 
@@ -40,8 +38,6 @@
       box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5); border: 3px solid #0b132b;
     }
     .nav-center-label { font-size: 0.7rem; font-weight: 700; color: #22c55e; margin-top: 2px; }
-
-    #reader { background-color: #fff; border-radius: 8px; overflow: hidden; color: #000; }
   </style>
 </head>
 <body>
@@ -60,37 +56,17 @@
         <button onclick="fetchData()" class="btn btn-sm btn-info fw-bold text-dark px-3">🔄 Muat Ulang</button>
       </div>
 
-      <!-- FILTER PENCARIAN -->
-      <div class="row g-2 mb-4">
-        <div class="col-12 col-md-8">
+      <!-- FILTER PENCARIAN & TOMBOL WA GABUNGAN (Disatukan sejajar) -->
+      <div class="row g-2">
+        <div class="col-12 col-md-6">
           <input type="text" id="searchInput" class="form-control form-control-dark" placeholder="Ketik kata kunci pencarian (Nama, SN, CID)..." onkeyup="searchTable()">
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-3">
           <input type="date" id="searchDate" class="form-control form-control-dark" title="Cari berdasarkan Tanggal Verif/Input" onchange="searchTable()">
         </div>
-      </div>
-
-      <!-- ZONA VERIFIKASI (SCAN CEPAT & PINDAH MASSAL) -->
-      <div id="zonaVerifikasi">
-        <hr style="border-color: #3a506b;">
-        <div class="row g-2 align-items-end mb-2">
-          <div class="col-12 col-md-5">
-            <label class="form-label small text-warning fw-bold mb-1">1. SCAN ALAT (SN / CID / P-SN)</label>
-            <div class="input-group">
-              <input type="text" id="scanInput" class="form-control form-control-dark" placeholder="Gunakan scanner USB atau ketik lalu Enter..." onkeypress="if(event.key === 'Enter') prosesScan(this.value)">
-              <button class="btn btn-warning text-dark fw-bold" onclick="mulaiKameraScanner()">📷 Kamera</button>
-            </div>
-          </div>
-          <div class="col-12 col-md-4 mt-3 mt-md-0 text-center">
-            <label class="form-label small text-success fw-bold mb-1">2. SETELAH SCAN & CENTANG</label>
-            <button class="btn btn-success fw-bold w-100" onclick="prosesPindahKeVerifikasi()">✅ Pindah ke "Baris 2" (Verif)</button>
-          </div>
-          <div class="col-12 col-md-3 mt-3 mt-md-0 text-end">
-            <label class="form-label small text-info fw-bold mb-1">KIRIM MASSAL</label>
-            <button class="btn btn-info text-dark fw-bold w-100" onclick="kirimWAGabungan()">📲 WA Gabungan</button>
-          </div>
+        <div class="col-12 col-md-3">
+          <button class="btn btn-info text-dark fw-bold w-100" onclick="kirimWAGabungan()">📲 WA Gabungan</button>
         </div>
-        <div id="reader" style="display: none;" class="mt-3"></div>
       </div>
     </div>
 
@@ -105,6 +81,7 @@
         <table class="table table-custom mb-0">
           <thead>
             <tr>
+              <!-- Checkbox (Centang) sekarang aktif di kedua halaman agar WA Gabungan tetap berfungsi -->
               <th style="width: 40px;" id="colCheckAll"><input type="checkbox" class="form-check-input" id="checkAll" onchange="toggleCheckAll(this)"></th>
               <th>WAKTU</th>
               <th>POP</th>
@@ -129,22 +106,30 @@
     
   </div>
 
-  <!-- Modal Pop-up Validasi Verifikasi -->
+  <!-- Modal Pop-up Validasi Verifikasi (DENGAN FITUR KAMERA) -->
   <div class="modal fade" id="modalVerif" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="background-color: #1c2541; border: 1px solid #3a506b; color: #fff;">
         <div class="modal-header" style="border-bottom: 1px solid #2a385b;">
-          <h5 class="modal-title text-warning fw-bold">Verifikasi Alat Manual</h5>
+          <h5 class="modal-title text-warning fw-bold">Verifikasi & Pindah Baris 2</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <p class="small text-info mb-3" id="teksInfoVerif"></p>
-          <label class="form-label small fw-bold text-secondary">Silakan ketik atau scan (SN / P-SN / CID):</label>
-          <input type="text" id="inputModalVerif" class="form-control form-control-dark" placeholder="Masukkan kecocokan data..." onkeypress="if(event.key === 'Enter') prosesModalVerif()">
+          <label class="form-label small fw-bold text-secondary">Silakan scan atau ketik (SN / P-SN / CID):</label>
+          
+          <div class="input-group mb-3">
+            <input type="text" id="inputModalVerif" class="form-control form-control-dark" placeholder="Ketik manual di sini..." onkeypress="if(event.key === 'Enter') prosesModalVerif()">
+            <button class="btn btn-warning text-dark fw-bold" type="button" onclick="mulaiKameraModal()">📷 Scan Kamera</button>
+          </div>
+          
+          <!-- Area untuk menampilkan kamera di dalam Pop-up -->
+          <div id="readerModal" style="display: none; background-color: #fff; border-radius: 8px; overflow: hidden; color: #000;"></div>
+        
         </div>
         <div class="modal-footer" style="border-top: 1px solid #2a385b;">
           <button type="button" class="btn btn-secondary btn-sm fw-bold" data-bs-dismiss="modal">Batal</button>
-          <button type="button" class="btn btn-warning text-dark btn-sm fw-bold" onclick="prosesModalVerif()">✔ Cocokkan & Verifikasi</button>
+          <button type="button" class="btn btn-warning text-dark btn-sm fw-bold" id="btnVerifModalAction" onclick="prosesModalVerif()">✔ Cocokkan & Pindah</button>
         </div>
       </div>
     </div>
@@ -172,12 +157,12 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec";
     
     let globalDataList = [];
-    let html5QrcodeScanner = null;
     let modeSheetAktif = "Baris 1"; 
     
-    // Variabel Modal
+    // Variabel Modal & Kamera Pop-up
     let modalVerifInstance = null;
     let currentVerifIndex = -1;
+    let html5QrcodeScannerModal = null;
 
     if (!localStorage.getItem("user_session")) {
       window.location.href = "login.html";
@@ -190,16 +175,12 @@
         document.getElementById("btnToggleSheet").classList.replace("btn-outline-warning", "btn-warning");
         document.getElementById("headerTitle").innerText = "✅ Alat Terverifikasi (Baris 2)";
         document.getElementById("subHeaderTitle").innerText = "Data Alat yang Sudah Selesai (Baris 2)";
-        document.getElementById("zonaVerifikasi").style.display = "none";
-        document.getElementById("colCheckAll").style.display = "none";
       } else {
         modeSheetAktif = "Baris 1";
         document.getElementById("btnToggleSheet").innerText = "Lihat Data Terverifikasi (Baris 2)";
         document.getElementById("btnToggleSheet").classList.replace("btn-warning", "btn-outline-warning");
         document.getElementById("headerTitle").innerText = "💻 Alat Menunggu Verif (Baris 1)";
         document.getElementById("subHeaderTitle").innerText = "Data Alat di Baris 1";
-        document.getElementById("zonaVerifikasi").style.display = "block";
-        document.getElementById("colCheckAll").style.display = "";
       }
       fetchData(); 
     }
@@ -242,9 +223,8 @@
         let linkAlat = row.foto_alat_url !== "-" ? `<a href="${row.foto_alat_url}" target="_blank" class="text-info text-decoration-none fw-bold">Lihat</a>` : "-";
         let linkMaps = row.sherlock && row.sherlock.includes(",") ? `<a href="https://www.google.com/maps?q=${row.sherlock}" target="_blank" class="text-warning text-decoration-none">📍 Maps</a>` : "-";
 
-        let chkDisplay = modeSheetAktif === "Baris 1" ? `<td><input type="checkbox" class="form-check-input row-check" value="${index}"></td>` : "<td style='display:none;'></td>";
+        let chkDisplay = `<td><input type="checkbox" class="form-check-input row-check" value="${index}"></td>`;
         
-        // Panggil fungsi BUKA MODAL, bukan verif langsung
         let btnVerif = modeSheetAktif === "Baris 1" ? `<button class="btn btn-warning text-dark btn-sm fw-bold px-2 py-0 mb-1 w-100" onclick="bukaModalVerif(${index})">✔ Verif</button><br>` : "";
         let btnWA1 = `<button class="btn btn-success btn-sm fw-bold px-2 py-0 w-100" onclick="kirimWASatu(${index})">📲 WA</button>`;
 
@@ -268,26 +248,61 @@
     }
 
     // ============================================
-    // LOGIKA POP-UP (MODAL) VALIDASI VERIFIKASI
+    // LOGIKA POP-UP (MODAL) DENGAN SCANNER
     // ============================================
 
     function bukaModalVerif(index) {
       currentVerifIndex = index;
       let row = globalDataList[index];
       
-      // Tulis info di dalam pop-up
-      document.getElementById('teksInfoVerif').innerHTML = `Anda sedang memverifikasi alat milik:<br><span class="fs-6 text-white fw-bold">${row.nama_lama || row.cid_lama}</span>`;
+      document.getElementById('teksInfoVerif').innerHTML = `Memverifikasi alat milik:<br><span class="fs-6 text-white fw-bold">${row.nama_lama || row.cid_lama}</span>`;
       document.getElementById('inputModalVerif').value = "";
       
       if (!modalVerifInstance) {
         modalVerifInstance = new bootstrap.Modal(document.getElementById('modalVerif'));
+        // Event listener saat modal tertutup (Batal/Close) agar kamera ikut mati
+        document.getElementById('modalVerif').addEventListener('hidden.bs.modal', stopKameraModal);
       }
-      modalVerifInstance.show();
       
-      // Auto-focus ke input box setelah modal muncul
+      modalVerifInstance.show();
       setTimeout(() => { document.getElementById('inputModalVerif').focus(); }, 500);
     }
 
+    // FUNGSI MENGHIDUPKAN KAMERA DI DALAM MODAL
+    function mulaiKameraModal() {
+      const readerDiv = document.getElementById('readerModal');
+      if (readerDiv.style.display === "block") {
+        stopKameraModal();
+        return;
+      }
+      
+      readerDiv.style.display = "block";
+      html5QrcodeScannerModal = new Html5QrcodeScanner("readerModal", { fps: 10, qrbox: {width: 250, height: 250} }, false);
+      html5QrcodeScannerModal.render((decodedText, decodedResult) => {
+          // Ketika berhasil scan barcode
+          document.getElementById('inputModalVerif').value = decodedText;
+          stopKameraModal();
+          prosesModalVerif(); // Otomatis trigger kecocokan
+      }, (error) => {});
+    }
+
+    // FUNGSI MEMATIKAN KAMERA DI DALAM MODAL
+    function stopKameraModal() {
+      const readerDiv = document.getElementById('readerModal');
+      if (html5QrcodeScannerModal) {
+        html5QrcodeScannerModal.clear().then(() => {
+          html5QrcodeScannerModal = null;
+          readerDiv.style.display = "none";
+        }).catch(e => {
+          html5QrcodeScannerModal = null;
+          readerDiv.style.display = "none";
+        });
+      } else {
+         readerDiv.style.display = "none";
+      }
+    }
+
+    // PROSES PENCOCOKAN DAN PINDAH OTOMATIS KE BARIS 2
     function prosesModalVerif() {
       let inputVal = document.getElementById('inputModalVerif').value.trim().toLowerCase();
       if(!inputVal) {
@@ -298,41 +313,50 @@
       let row = globalDataList[currentVerifIndex];
       let match = false;
       
-      // Cocokkan inputan dengan SN, P-SN, atau CID yang ada di baris tersebut
       if (row.sn && String(row.sn).toLowerCase() === inputVal) match = true;
       else if (row.cid_lama && String(row.cid_lama).toLowerCase() === inputVal) match = true;
       else if (row.psn && String(row.psn).toLowerCase() === inputVal) match = true;
       
       if (match) {
-        // JIKA COCOK (BERHASIL)
-        modalVerifInstance.hide();
-        tandaiTerverifikasi(currentVerifIndex);
-        
+        // Mainkan suara keberhasilan
         let audio = new Audio('https://www.soundjay.com/buttons/sounds/button-09.mp3');
         audio.play().catch(e => {});
+
+        // Otomatis Pindah ke Baris 2 via API
+        const btnVerifAction = document.getElementById('btnVerifModalAction');
+        btnVerifAction.disabled = true;
+        btnVerifAction.innerText = "⏳ Memproses Pindah...";
+
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({ 
+            action: "mutasiData", 
+            dariSheet: "Baris 1", 
+            keSheet: "Baris 2", 
+            teksCid: row.cid_lama // Menggunakan CID dari data yang diverifikasi
+          })
+        })
+        .then(r => r.json())
+        .then(res => {
+          alert("✅ Data Valid! Berhasil diverifikasi dan otomatis dipindah ke Baris 2.");
+          modalVerifInstance.hide();
+          fetchData(); // Refresh ulang tabel untuk menghilangkan baris tersebut
+        })
+        .catch(err => {
+          alert("Gagal memindahkan data ke Baris 2 karena masalah jaringan.");
+        })
+        .finally(() => {
+          btnVerifAction.disabled = false;
+          btnVerifAction.innerText = "✔ Cocokkan & Pindah";
+        });
         
       } else {
-        // JIKA TIDAK COCOK (GAGAL)
         alert("❌ DATA TIDAK SESUAI! \nInput yang dimasukkan tidak cocok dengan SN/CID di baris ini.");
         document.getElementById('inputModalVerif').value = "";
         document.getElementById('inputModalVerif').focus();
       }
     }
 
-    // Fungsi menandai hijau (Dipanggil dari modal atau dari scanner utama)
-    function tandaiTerverifikasi(index) {
-      let tr = document.getElementById(`row-${index}`);
-      if (tr) {
-        let cb = tr.querySelector('.row-check');
-        cb.checked = true; 
-        tr.classList.add('verified-row'); 
-      }
-    }
-
-
-    // ============================================
-    // LOGIKA FITUR LAINNYA (CHECK ALL, SCANNER, PINDAH)
-    // ============================================
     function toggleCheckAll(source) {
       let checkboxes = document.querySelectorAll('.row-check');
       checkboxes.forEach(cb => {
@@ -341,83 +365,23 @@
       });
     }
 
-    // Scanner Tembak Utama di atas tabel (Auto-find & Verif)
-    function prosesScan(text) {
-      let query = text.trim().toLowerCase();
-      if(!query) return;
-
-      let foundIndex = globalDataList.findIndex(row => 
-        (row.sn && String(row.sn).toLowerCase() === query) ||
-        (row.cid_lama && String(row.cid_lama).toLowerCase() === query) ||
-        (row.psn && String(row.psn).toLowerCase() === query)
-      );
-
-      if(foundIndex > -1) {
-        tandaiTerverifikasi(foundIndex); 
-        let tr = document.getElementById(`row-${foundIndex}`);
-        tr.scrollIntoView({ behavior: "smooth", block: "center" }); 
-        
-        let audio = new Audio('https://www.soundjay.com/buttons/sounds/button-09.mp3');
-        audio.play().catch(e => {});
-
-      } else {
-        alert("❌ Data perangkat tidak ditemukan untuk scan: " + text);
-      }
-      
-      document.getElementById('scanInput').value = "";
-      document.getElementById('scanInput').focus();
-    }
-
-    function mulaiKameraScanner() {
-      const readerDiv = document.getElementById('reader');
-      if (readerDiv.style.display === "block") {
-        if (html5QrcodeScanner) html5QrcodeScanner.clear();
-        readerDiv.style.display = "none"; return;
-      }
-      readerDiv.style.display = "block";
-      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-      html5QrcodeScanner.render((decodedText, decodedResult) => {
-          html5QrcodeScanner.clear();
-          readerDiv.style.display = "none";
-          prosesScan(decodedText);
-      }, (error) => {});
-    }
-
-    // MEMINDAH KE BARIS 2
-    function prosesPindahKeVerifikasi() {
-      let checkboxes = document.querySelectorAll('.row-check:checked');
-      if (checkboxes.length === 0) {
-        alert("Pilih/Centang atau Scan minimal 1 data perangkat yang akan dipindah!");
-        return;
-      }
-
-      let cidsToMove = [];
-      checkboxes.forEach(cb => {
-        let row = globalDataList[cb.value];
-        if (row.cid_lama) cidsToMove.push(row.cid_lama);
-      });
-
-      let konfirmasi = confirm(`Memindahkan ${cidsToMove.length} data alat ini ke sheet 'Baris 2' (Data akan hilang dari halaman ini)?`);
-      if(!konfirmasi) return;
-
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "mutasiData", dariSheet: "Baris 1", keSheet: "Baris 2", teksCid: cidsToMove.join("\n") })
-      })
-      .then(r => r.json())
-      .then(res => {
-        alert(res.message);
-        if(res.status === "success") fetchData(); 
-      })
-      .catch(err => alert("Terjadi kesalahan saat memindahkan data!"));
-    }
-
     // ============================================
-    // KIRIM WHATSAPP (1 DATA & GABUNGAN)
+    // KIRIM WHATSAPP (1 DATA & GABUNGAN) FORMAT RAPI
     // ============================================
     function kirimWASatu(index) {
       let row = globalDataList[index];
-      let teksWA = `*INFO PERANGKAT*\n\n*Nama:* ${row.nama_lama || "-"}\n*CID:* ${row.cid_lama || "-"}\n*ODP:* ${row.odp || "-"}\n*POP:* ${row.pop || "-"}\n*SN:* ${row.sn || "-"}\n*P-SN:* ${row.psn || "-"}\n*Waktu:* ${row.timestamp || "-"}\n*Status:* ${modeSheetAktif}`;
+      let namaTS = row.ts || row.sales || "-"; 
+      
+      let teksWA = 
+`Nama : ${row.nama_lama || "-"}
+CID  : ${row.cid_lama || "-"}
+ODP  : ${row.odp || "-"}
+POP  : ${row.pop || "-"}
+SN   : ${row.sn || "-"}
+P-SN : ${row.psn || "-"}
+KET  : ${row.keterangan || "-"}
+TS   : ${namaTS}`;
+
       window.open(`https://wa.me/?text=${encodeURIComponent(teksWA)}`, '_blank');
     }
 
@@ -425,12 +389,23 @@
       let checkboxes = document.querySelectorAll('.row-check:checked');
       if (checkboxes.length === 0) return alert("Centang data yang ingin dikirim!");
 
-      let teksWA = `*REKAP PERANGKAT TERVERIFIKASI (${modeSheetAktif})*\n\n`;
-      checkboxes.forEach((cb, index) => {
+      let teksWA = "";
+      checkboxes.forEach((cb) => {
         let row = globalDataList[cb.value];
-        teksWA += `${index + 1}. *Nama:* ${row.nama_lama || "-"}\n   *CID:* ${row.cid_lama || "-"}\n   *SN:* ${row.sn || "-"}\n   *ODP:* ${row.odp || "-"}\n\n`;
+        let namaTS = row.ts || row.sales || "-";
+        
+        teksWA += 
+`Nama : ${row.nama_lama || "-"}
+CID  : ${row.cid_lama || "-"}
+ODP  : ${row.odp || "-"}
+POP  : ${row.pop || "-"}
+SN   : ${row.sn || "-"}
+P-SN : ${row.psn || "-"}
+KET  : ${row.keterangan || "-"}
+TS   : ${namaTS}\n\n`;
       });
-      window.open(`https://wa.me/?text=${encodeURIComponent(teksWA)}`, '_blank');
+      
+      window.open(`https://wa.me/?text=${encodeURIComponent(teksWA.trim())}`, '_blank');
     }
 
     function searchTable() {

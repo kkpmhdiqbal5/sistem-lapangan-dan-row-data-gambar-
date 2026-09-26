@@ -15,11 +15,11 @@
     .form-control-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; }
     .form-control-dark:focus { background-color: #0b132b; color: #fff; border-color: #38bdf8; box-shadow: none; }
     
-    .table-custom { color: #e0e6ed; font-size: 0.8rem; white-space: nowrap; }
-    .table-custom th { background-color: #2a385b; color: #fff; border-bottom: none; text-align: center; vertical-align: middle; }
-    .table-custom td { border-bottom: 1px solid #2a385b; background-color: #1c2541; vertical-align: middle; text-align: center; }
+    .table-custom { color: #e0e6ed !important; font-size: 0.8rem; white-space: nowrap; }
+    .table-custom th { background-color: #2a385b !important; color: #ffffff !important; border-bottom: none; text-align: center; vertical-align: middle; }
+    .table-custom td { border-bottom: 1px solid #2a385b !important; background-color: #1c2541 !important; color: #e0e6ed !important; vertical-align: middle; text-align: center; }
     
-    .verified-row td { background-color: #064e3b !important; color: #a7f3d0 !important; font-weight: 500; }
+    .verified-row td { background-color: #059669 !important; color: #ffffff !important; font-weight: bold !important; border-color: #047857 !important; }
 
     /* BOTTOM NAVIGATION BAR */
     .bottom-app-nav { 
@@ -48,7 +48,7 @@
   <!-- Top Bar -->
   <div class="top-bar d-flex justify-content-between align-items-center mb-3">
     <div class="fw-bold fs-6 text-white" id="headerTitle">💻 Alat Menunggu Verif (Baris 1)</div>
-    <button onclick="toggleTampilanSheet()" id="btnToggleSheet" class="btn btn-sm btn-outline-warning fw-bold px-3">Lihat Data Terverifikasi</button>
+    <button onclick="toggleTampilanSheet()" id="btnToggleSheet" class="btn btn-sm btn-outline-warning fw-bold px-3">Lihat Data Terverifikasi (Baris 2)</button>
   </div>
 
   <div class="container-fluid px-3">
@@ -59,9 +59,17 @@
         <button onclick="fetchData()" class="btn btn-sm btn-info fw-bold text-dark px-3">🔄 Muat Ulang</button>
       </div>
 
-      <input type="text" id="searchInput" class="form-control form-control-dark mb-4" placeholder="Ketik kata kunci pencarian..." onkeyup="searchTable()">
+      <!-- FILTER PENCARIAN (TEKS & TANGGAL) -->
+      <div class="row g-2 mb-4">
+        <div class="col-12 col-md-8">
+          <input type="text" id="searchInput" class="form-control form-control-dark" placeholder="Ketik kata kunci pencarian (Nama, SN, CID)..." onkeyup="searchTable()">
+        </div>
+        <div class="col-12 col-md-4">
+          <input type="date" id="searchDate" class="form-control form-control-dark" title="Cari berdasarkan Tanggal Verif/Input" onchange="searchTable()">
+        </div>
+      </div>
 
-      <!-- ZONA VERIFIKASI (DISembunyikan jika sedang melihat "sudah diambil") -->
+      <!-- ZONA VERIFIKASI -->
       <div id="zonaVerifikasi">
         <hr style="border-color: #3a506b;">
         <div class="row g-2 align-items-end mb-2">
@@ -74,11 +82,11 @@
           </div>
           <div class="col-12 col-md-4 mt-3 mt-md-0 text-center">
             <label class="form-label small text-success fw-bold mb-1">2. SETELAH SCAN & CENTANG</label>
-            <button class="btn btn-success fw-bold w-100" onclick="prosesPindahKeVerifikasi()">✅ Pindah ke "Terverifikasi"</button>
+            <button class="btn btn-success fw-bold w-100" onclick="prosesPindahKeVerifikasi()">✅ Pindah ke "Baris 2" (Verif)</button>
           </div>
           <div class="col-12 col-md-3 mt-3 mt-md-0 text-end">
-            <label class="form-label small text-info fw-bold mb-1">OPSI TAMBAHAN</label>
-            <button class="btn btn-info text-dark fw-bold w-100" onclick="kirimWAPilihan()">📲 Kirim WA</button>
+            <label class="form-label small text-info fw-bold mb-1">KIRIM MASSAL</label>
+            <button class="btn btn-info text-dark fw-bold w-100" onclick="kirimWAGabungan()">📲 WA Gabungan</button>
           </div>
         </div>
 
@@ -109,7 +117,7 @@
               <th>FOTO ALAT</th>
               <th>LOKASI</th>
               <th>KET</th>
-              <th class="text-warning" id="colAksi">AKSI</th>
+              <th class="text-warning">AKSI</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -140,43 +148,41 @@
 
   <script>
     // GANTI DENGAN URL DEPLOYMENT APPS SCRIPT ANDA
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMD25/exec";
     
     let globalDataList = [];
     let html5QrcodeScanner = null;
-    let modeSheetAktif = "Baris 1"; // Default view
+    let modeSheetAktif = "Baris 1"; 
 
     if (!localStorage.getItem("user_session")) {
       window.location.href = "login.html";
     }
 
-    // Toggle tampilan sheet (Baris 1 <-> sudah diambil)
+    // Toggle tampilan sheet (Baris 1 <-> Baris 2)
     function toggleTampilanSheet() {
       if (modeSheetAktif === "Baris 1") {
-        modeSheetAktif = "sudah diambil";
+        modeSheetAktif = "Baris 2"; // Target sekarang adalah Baris 2
         document.getElementById("btnToggleSheet").innerText = "Kembali ke Baris 1 (Belum Verif)";
         document.getElementById("btnToggleSheet").classList.replace("btn-outline-warning", "btn-warning");
-        document.getElementById("headerTitle").innerText = "✅ Alat Terverifikasi (sudah diambil)";
-        document.getElementById("subHeaderTitle").innerText = "Data Alat yang Sudah Selesai";
+        document.getElementById("headerTitle").innerText = "✅ Alat Terverifikasi (Baris 2)";
+        document.getElementById("subHeaderTitle").innerText = "Data Alat yang Sudah Selesai (Baris 2)";
         document.getElementById("zonaVerifikasi").style.display = "none";
         document.getElementById("colCheckAll").style.display = "none";
-        document.getElementById("colAksi").style.display = "none";
       } else {
         modeSheetAktif = "Baris 1";
-        document.getElementById("btnToggleSheet").innerText = "Lihat Data Terverifikasi";
+        document.getElementById("btnToggleSheet").innerText = "Lihat Data Terverifikasi (Baris 2)";
         document.getElementById("btnToggleSheet").classList.replace("btn-warning", "btn-outline-warning");
         document.getElementById("headerTitle").innerText = "💻 Alat Menunggu Verif (Baris 1)";
         document.getElementById("subHeaderTitle").innerText = "Data Alat di Baris 1";
         document.getElementById("zonaVerifikasi").style.display = "block";
         document.getElementById("colCheckAll").style.display = "";
-        document.getElementById("colAksi").style.display = "";
       }
       fetchData(); 
     }
 
     function fetchData() {
       const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = `<tr><td colspan="13" class="text-center py-4">Memuat data dari sheet '${modeSheetAktif}'...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="13" class="text-center py-4 text-white">Memuat data dari sheet '${modeSheetAktif}'...</td></tr>`;
       document.getElementById('checkAll').checked = false;
       
       fetch(SCRIPT_URL + "?action=getInfoPerangkat&sheetName=" + encodeURIComponent(modeSheetAktif))
@@ -200,7 +206,7 @@
       tbody.innerHTML = "";
 
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="13" class="text-center py-4">Tidak ada data ditemukan</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13" class="text-center py-4 text-white">Tidak ada data ditemukan</td></tr>`;
         return;
       }
 
@@ -208,12 +214,15 @@
         let tr = document.createElement('tr');
         tr.id = `row-${index}`;
         
-        let linkRumah = row.foto_rumah_url !== "-" ? `<a href="${row.foto_rumah_url}" target="_blank" class="text-primary text-decoration-none fw-bold">Lihat</a>` : "-";
+        let linkRumah = row.foto_rumah_url !== "-" ? `<a href="${row.foto_rumah_url}" target="_blank" class="text-info text-decoration-none fw-bold">Lihat</a>` : "-";
         let linkAlat = row.foto_alat_url !== "-" ? `<a href="${row.foto_alat_url}" target="_blank" class="text-info text-decoration-none fw-bold">Lihat</a>` : "-";
         let linkMaps = row.sherlock && row.sherlock.includes(",") ? `<a href="https://www.google.com/maps?q=${row.sherlock}" target="_blank" class="text-warning text-decoration-none">📍 Maps</a>` : "-";
 
         let chkDisplay = modeSheetAktif === "Baris 1" ? `<td><input type="checkbox" class="form-check-input row-check" value="${index}"></td>` : "<td style='display:none;'></td>";
-        let btnDisplay = modeSheetAktif === "Baris 1" ? `<td><button class="btn btn-outline-warning btn-sm fw-bold px-2 py-0" onclick="verifikasiManual(${index})">✔ Verif</button></td>` : "<td style='display:none;'></td>";
+        
+        // TOMBOL AKSI UNTUK VERIFIKASI DAN WA (1 DATA)
+        let btnVerif = modeSheetAktif === "Baris 1" ? `<button class="btn btn-warning text-dark btn-sm fw-bold px-2 py-0 mb-1 w-100" onclick="verifikasiManual(${index})">✔ Verif</button><br>` : "";
+        let btnWA1 = `<button class="btn btn-success btn-sm fw-bold px-2 py-0 w-100" onclick="kirimWASatu(${index})">📲 WA</button>`;
 
         tr.innerHTML = `
           ${chkDisplay}
@@ -228,7 +237,7 @@
           <td>${linkAlat}</td>
           <td>${linkMaps}</td>
           <td>${row.keterangan || "-"}</td>
-          ${btnDisplay}
+          <td style="min-width: 80px;">${btnVerif}${btnWA1}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -296,7 +305,7 @@
       }, (error) => {});
     }
 
-    // TOMBOL "PINDAH KE TERVERIFIKASI"
+    // MEMINDAH KE BARIS 2
     function prosesPindahKeVerifikasi() {
       let checkboxes = document.querySelectorAll('.row-check:checked');
       if (checkboxes.length === 0) {
@@ -310,7 +319,7 @@
         if (row.cid_lama) cidsToMove.push(row.cid_lama);
       });
 
-      let konfirmasi = confirm(`Memindahkan ${cidsToMove.length} data alat ini ke sheet 'sudah diambil' (Data akan hilang dari halaman ini)?`);
+      let konfirmasi = confirm(`Memindahkan ${cidsToMove.length} data alat ini ke sheet 'Baris 2' (Data akan hilang dari halaman ini)?`);
       if(!konfirmasi) return;
 
       fetch(SCRIPT_URL, {
@@ -318,7 +327,7 @@
         body: JSON.stringify({ 
           action: "mutasiData", 
           dariSheet: "Baris 1", 
-          keSheet: "sudah diambil", 
+          keSheet: "Baris 2", // DIPINDAH KE BARIS 2
           teksCid: cidsToMove.join("\n") 
         })
       })
@@ -330,11 +339,20 @@
       .catch(err => alert("Terjadi kesalahan saat memindahkan data!"));
     }
 
-    function kirimWAPilihan() {
+    // ============================================
+    // KIRIM WHATSAPP (1 DATA & GABUNGAN)
+    // ============================================
+    function kirimWASatu(index) {
+      let row = globalDataList[index];
+      let teksWA = `*INFO PERANGKAT*\n\n*Nama:* ${row.nama_lama || "-"}\n*CID:* ${row.cid_lama || "-"}\n*ODP:* ${row.odp || "-"}\n*POP:* ${row.pop || "-"}\n*SN:* ${row.sn || "-"}\n*P-SN:* ${row.psn || "-"}\n*Waktu:* ${row.timestamp || "-"}\n*Status:* ${modeSheetAktif}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(teksWA)}`, '_blank');
+    }
+
+    function kirimWAGabungan() {
       let checkboxes = document.querySelectorAll('.row-check:checked');
       if (checkboxes.length === 0) return alert("Centang data yang ingin dikirim!");
 
-      let teksWA = "*REKAP PERANGKAT TERVERIFIKASI*\n\n";
+      let teksWA = `*REKAP PERANGKAT TERVERIFIKASI (${modeSheetAktif})*\n\n`;
       checkboxes.forEach((cb, index) => {
         let row = globalDataList[cb.value];
         teksWA += `${index + 1}. *Nama:* ${row.nama_lama || "-"}\n   *CID:* ${row.cid_lama || "-"}\n   *SN:* ${row.sn || "-"}\n   *ODP:* ${row.odp || "-"}\n\n`;
@@ -342,13 +360,24 @@
       window.open(`https://wa.me/?text=${encodeURIComponent(teksWA)}`, '_blank');
     }
 
+    // ============================================
+    // PENCARIAN TANGGAL DAN KATA KUNCI
+    // ============================================
     function searchTable() {
       let input = document.getElementById("searchInput").value.toLowerCase();
+      let dateInput = document.getElementById("searchDate").value; // Format: YYYY-MM-DD
+      
       let trs = document.querySelectorAll("#tableBody tr");
       trs.forEach(tr => {
         if (!tr.id.startsWith("row-")) return; 
+        
         let textRow = tr.innerText.toLowerCase();
-        tr.style.display = textRow.includes(input) ? "" : "none";
+        let dateCell = tr.cells[1] ? tr.cells[1].innerText : ""; // Kolom index 1 adalah WAKTU
+        
+        let matchText = textRow.includes(input);
+        let matchDate = dateInput === "" || dateCell.includes(dateInput);
+        
+        tr.style.display = (matchText && matchDate) ? "" : "none";
       });
     }
 

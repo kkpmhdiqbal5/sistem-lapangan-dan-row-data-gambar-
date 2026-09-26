@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .table-container { overflow-x: auto; max-height: 70vh; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 70px; }
+        .table-container { overflow-x: auto; max-height: 65vh; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         th, td { border: 1px solid #334155; padding: 10px 12px; text-align: left; }
         th { background-color: #1e293b; color: #94a3b8; position: sticky; top: 0; z-index: 10; font-weight: 600; text-transform: uppercase;}
@@ -17,21 +17,37 @@
         .bg-menunggu { background-color: #b45309; }
         .bg-sudah { background-color: #15803d; }
         .bg-kunjungan { background-color: #0369a1; }
+        /* Navbar Bawah */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1e293b; border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 10px 0; z-index: 50; }
+        .nav-item { color: #94a3b8; text-align: center; text-decoration: none; font-size: 0.75rem; flex: 1; }
+        .nav-item.active { color: #38bdf8; }
+        .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 2px; }
     </style>
 </head>
 <body class="p-4">
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-4 bg-slate-800 p-4 rounded-lg border border-slate-700">
+    <!-- Header Atas (Dengan Panel Kontrol & Profil) -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-4 bg-slate-800 p-4 rounded-lg border border-slate-700 gap-3">
         <h2 class="text-xl font-bold"><i class="fas fa-chart-bar mr-2 text-blue-400"></i> Panel Rekap Data Admin</h2>
-        <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-bold"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+        
+        <div class="flex items-center gap-3">
+            <div class="bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
+                <i class="fas fa-sliders-h text-cyan-400"></i>
+                <span class="text-slate-300 font-semibold">Panel Kontrol</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
+                <i class="fas fa-user-circle text-blue-400 text-lg"></i>
+                <span id="userProfileName" class="text-slate-200 font-bold">Admin</span>
+            </div>
+            <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-bold"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
     </div>
 
     <!-- Filter & Action Controls -->
     <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 mb-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             
-            <!-- 1. Dropdown Sumber Sheet (DITAMBAH SUDAH KUNJUNGAN) -->
+            <!-- 1. Dropdown Sumber Sheet -->
             <div>
                 <label class="block text-xs font-bold text-slate-400 mb-1">PILIH SUMBER SHEET</label>
                 <select id="filterSheet" onchange="applyFilter()" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-sm focus:outline-none focus:border-blue-500">
@@ -69,10 +85,17 @@
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-end gap-2">
-            <button onclick="kirimWAGabungan()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-bold"><i class="fab fa-whatsapp mr-1"></i> Kirim Gabungan (WA)</button>
-            <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+        <!-- Action Buttons & Jumlah Data -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-3">
+            <!-- Indikator Jumlah Data -->
+            <div id="dataCountBadge" class="bg-slate-900 border border-slate-700 text-cyan-400 px-3 py-2 rounded text-sm font-bold">
+                <i class="fas fa-database mr-1"></i> <span id="totalDataText">0 Data</span>
+            </div>
+
+            <div class="flex justify-end gap-2 w-full md:w-auto">
+                <button onclick="kirimWAGabungan()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-bold"><i class="fab fa-whatsapp mr-1"></i> Kirim Gabungan (WA)</button>
+                <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+            </div>
         </div>
     </div>
 
@@ -95,26 +118,45 @@
                 </tr>
             </thead>
             <tbody id="tBody">
-                <!-- Data akan dimuat disini menggunakan JavaScript -->
                 <tr><td colspan="11" class="text-center py-6 text-yellow-500 font-bold"><i class="fas fa-hourglass-half fa-spin mr-2"></i> Sedang mengambil data dari server... Mohon tunggu.</td></tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Navigasi Bar Bawah -->
+    <div class="bottom-nav">
+        <a href="search.html" class="nav-item active">
+            <i class="fas fa-search"></i> Cari
+        </a>
+        <a href="admin.html" class="nav-item">
+            <i class="fas fa-laptop"></i> Perangkat
+        </a>
+        <a href="form.html" class="nav-item">
+            <i class="fas fa-edit"></i> Form Lapangan
+        </a>
+        <a href="laporan.html" class="nav-item">
+            <i class="fas fa-file-alt"></i> Laporan
+        </a>
+    </div>
+
     <!-- Script Logika Inti -->
     <script>
         // ==========================================
-        // ⚠️ GANTI DENGAN URL WEB APP APPS SCRIPT ANDA
+        // GANTI DENGAN URL WEB APP APPS SCRIPT ANDA
         // ==========================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec"; 
         
         let globalDataList = [];
         let filteredDataList = [];
 
-        // Memuat Data Pertama Kali
-        window.onload = () => { loadData(); };
+        window.onload = () => { 
+            loadData(); 
+            let savedUser = localStorage.getItem("username");
+            if(savedUser) {
+                document.getElementById("userProfileName").innerText = savedUser;
+            }
+        };
 
-        // FUNGSI TARIK DATA DARI APPS SCRIPT
         async function loadData() {
             document.getElementById("tBody").innerHTML = `<tr><td colspan="11" class="text-center py-6 text-yellow-500 font-bold"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat Ulang Data...</td></tr>`;
             try {
@@ -123,7 +165,7 @@
                 
                 if(result.status === "success") {
                     globalDataList = result.data;
-                    applyFilter(); // Tampilkan data setelah berhasil dimuat
+                    applyFilter(); 
                 } else {
                     document.getElementById("tBody").innerHTML = `<tr><td colspan="11" class="text-center py-4 text-red-500">Error: ${result.message}</td></tr>`;
                 }
@@ -132,15 +174,13 @@
             }
         }
 
-        // FUNGSI FILTER DATA
         function applyFilter() {
             let filterSheet = document.getElementById("filterSheet").value;
             let filterKriteria = document.getElementById("filterKriteria").value;
-            let filterTanggal = document.getElementById("filterTanggal").value; // Format: yyyy-mm-dd
+            let filterTanggal = document.getElementById("filterTanggal").value; 
             let filterKeyword = document.getElementById("filterKeyword").value.toLowerCase();
 
             filteredDataList = globalDataList.filter(row => {
-                // 1. Filter Sheet
                 let matchSheet = true;
                 if(filterSheet !== "Semua Sheet") {
                     if(filterSheet === "MENUNGGU DIAMBIL") {
@@ -150,20 +190,16 @@
                     }
                 }
 
-                // 2. Filter Tanggal
                 let matchTanggal = true;
                 if(filterTanggal) {
-                    // Konversi string DB ke standar (Contoh parsing sederhana, sesuaikan dengan output DB Anda)
                     let rowTime = String(row.timestamp || "").toLowerCase();
-                    // Untuk pencarian aman, cocokkan apakah string input ada di dalam string tanggal DB
                     let [y, m, d] = filterTanggal.split("-");
-                    let formatBalik = `${d}/${m}/${y}`; // Sesuai format Indonesia (DD/MM/YYYY)
+                    let formatBalik = `${d}/${m}/${y}`; 
                     if(rowTime.indexOf(formatBalik) === -1 && rowTime.indexOf(filterTanggal) === -1) {
                         matchTanggal = false;
                     }
                 }
 
-                // 3. Filter Kata Kunci & Kriteria
                 let matchKeyword = true;
                 if(filterKeyword) {
                     if(filterKriteria === "CID") {
@@ -173,7 +209,6 @@
                     } else if(filterKriteria === "SN") {
                         matchKeyword = String(row.sn).toLowerCase().includes(filterKeyword);
                     } else {
-                        // Semua Kriteria
                         let gabunganText = `${row.cid_lama} ${row.nama_lama} ${row.sn} ${row.odp} ${row.pop}`.toLowerCase();
                         matchKeyword = gabunganText.includes(filterKeyword);
                     }
@@ -182,10 +217,12 @@
                 return matchSheet && matchTanggal && matchKeyword;
             });
 
+            // Update Total Jumlah Data
+            document.getElementById("totalDataText").innerText = filteredDataList.length + " Data Ditampilkan";
+
             renderTable(filteredDataList);
         }
 
-        // FUNGSI TAMPILKAN KE TABEL
         function renderTable(dataArray) {
             const tbody = document.getElementById("tBody");
             tbody.innerHTML = "";
@@ -196,7 +233,6 @@
             }
 
             dataArray.forEach((row, index) => {
-                // Warna Badge berdasarkan sumber sheet
                 let badgeClass = "bg-menunggu";
                 if(row.sumber_sheet === "SUDAH DIAMBIL") badgeClass = "bg-sudah";
                 if(row.sumber_sheet === "SUDAH KUNJUNGAN") badgeClass = "bg-kunjungan";
@@ -225,15 +261,11 @@
             });
         }
 
-        // Checkbox Master
         function toggleAllCheckboxes(masterObj) {
             let checkboxes = document.querySelectorAll('.row-check');
             checkboxes.forEach(cb => cb.checked = masterObj.checked);
         }
 
-        // ============================================
-        // KIRIM WHATSAPP (1 DATA) DENGAN NO HP
-        // ============================================
         function kirimWASatu(index) {
             let row = filteredDataList[index];
             let namaTS = row.ts || row.sales || "-"; 
@@ -252,9 +284,6 @@ TS   : ${namaTS}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(teksWA)}`, '_blank');
         }
 
-        // ============================================
-        // KIRIM WHATSAPP GABUNGAN DENGAN NO HP
-        // ============================================
         function kirimWAGabungan() {
             let checkboxes = document.querySelectorAll('.row-check:checked');
             if (checkboxes.length === 0) return alert("Silakan centang data yang ingin dikirim via WhatsApp terlebih dahulu!");
@@ -277,6 +306,11 @@ TS   : ${namaTS}\n\n`;
             });
             
             window.open(`https://wa.me/?text=${encodeURIComponent(teksWA.trim())}`, '_blank');
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
         }
     </script>
 </body>

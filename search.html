@@ -58,14 +58,17 @@
                 </select>
             </div>
 
-            <!-- 2. Kriteria Cari -->
+            <!-- 2. Kriteria Cari (DISESUAIKAN DENGAN SHEET ANDA) -->
             <div>
                 <label class="block text-xs font-bold text-slate-400 mb-1">KRITERIA CARI</label>
                 <select id="filterKriteria" onchange="applyFilter()" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-sm focus:outline-none focus:border-blue-500">
                     <option value="Semua Kriteria">Semua Kriteria</option>
                     <option value="CID">CID</option>
                     <option value="NAMA">Nama</option>
-                    <option value="SN">SN</option>
+                    <option value="SN">SN / P-SN</option>
+                    <option value="ODP">ODP</option>
+                    <option value="POP">POP</option>
+                    <option value="SALES">Sales / TS</option>
                 </select>
             </div>
 
@@ -79,7 +82,7 @@
             <div>
                 <label class="block text-xs font-bold text-slate-400 mb-1">KATA KUNCI / SCAN</label>
                 <div class="flex">
-                    <input type="text" id="filterKeyword" onkeyup="applyFilter()" placeholder="Ketik CID, Nama, SN..." class="w-full bg-slate-900 border border-slate-600 rounded-l p-2 text-sm focus:outline-none focus:border-blue-500">
+                    <input type="text" id="filterKeyword" onkeyup="applyFilter()" placeholder="Ketik pencarian..." class="w-full bg-slate-900 border border-slate-600 rounded-l p-2 text-sm focus:outline-none focus:border-blue-500">
                     <button class="bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold px-3 rounded-r text-sm"><i class="fas fa-camera"></i> SCAN</button>
                 </div>
             </div>
@@ -87,7 +90,6 @@
 
         <!-- Action Buttons & Jumlah Data -->
         <div class="flex flex-col md:flex-row justify-between items-center gap-3">
-            <!-- Indikator Jumlah Data -->
             <div id="dataCountBadge" class="bg-slate-900 border border-slate-700 text-cyan-400 px-3 py-2 rounded text-sm font-bold">
                 <i class="fas fa-database mr-1"></i> <span id="totalDataText">0 Data</span>
             </div>
@@ -125,25 +127,14 @@
 
     <!-- Navigasi Bar Bawah -->
     <div class="bottom-nav">
-        <a href="search.html" class="nav-item active">
-            <i class="fas fa-search"></i> Cari
-        </a>
-        <a href="admin.html" class="nav-item">
-            <i class="fas fa-laptop"></i> Perangkat
-        </a>
-        <a href="form.html" class="nav-item">
-            <i class="fas fa-edit"></i> Form Lapangan
-        </a>
-        <a href="laporan.html" class="nav-item">
-            <i class="fas fa-file-alt"></i> Laporan
-        </a>
+        <a href="search.html" class="nav-item active"><i class="fas fa-search"></i> Cari</a>
+        <a href="admin.html" class="nav-item"><i class="fas fa-laptop"></i> Perangkat</a>
+        <a href="form.html" class="nav-item"><i class="fas fa-edit"></i> Form Lapangan</a>
+        <a href="laporan.html" class="nav-item"><i class="fas fa-file-alt"></i> Laporan</a>
     </div>
 
     <!-- Script Logika Inti -->
     <script>
-        // ==========================================
-        // GANTI DENGAN URL WEB APP APPS SCRIPT ANDA
-        // ==========================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec"; 
         
         let globalDataList = [];
@@ -207,9 +198,15 @@
                     } else if(filterKriteria === "NAMA") {
                         matchKeyword = String(row.nama_lama).toLowerCase().includes(filterKeyword);
                     } else if(filterKriteria === "SN") {
-                        matchKeyword = String(row.sn).toLowerCase().includes(filterKeyword);
+                        matchKeyword = (String(row.sn) + " " + String(row.psn)).toLowerCase().includes(filterKeyword);
+                    } else if(filterKriteria === "ODP") {
+                        matchKeyword = String(row.odp).toLowerCase().includes(filterKeyword);
+                    } else if(filterKriteria === "POP") {
+                        matchKeyword = String(row.pop).toLowerCase().includes(filterKeyword);
+                    } else if(filterKriteria === "SALES") {
+                        matchKeyword = (String(row.sales) + " " + String(row.ts)).toLowerCase().includes(filterKeyword);
                     } else {
-                        let gabunganText = `${row.cid_lama} ${row.nama_lama} ${row.sn} ${row.odp} ${row.pop}`.toLowerCase();
+                        let gabunganText = `${row.cid_lama} ${row.nama_lama} ${row.sn} ${row.psn} ${row.odp} ${row.pop} ${row.sales} ${row.ts}`.toLowerCase();
                         matchKeyword = gabunganText.includes(filterKeyword);
                     }
                 }
@@ -217,9 +214,7 @@
                 return matchSheet && matchTanggal && matchKeyword;
             });
 
-            // Update Total Jumlah Data
             document.getElementById("totalDataText").innerText = filteredDataList.length + " Data Ditampilkan";
-
             renderTable(filteredDataList);
         }
 

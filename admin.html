@@ -333,17 +333,21 @@
             action: "mutasiData", 
             dariSheet: "Baris 1", 
             keSheet: "Baris 2", 
-            teksCid: row.cid_lama // Menggunakan CID dari data yang diverifikasi
+            teksCid: String(row.cid_lama) // PERBAIKAN: Memaksa format menjadi Teks/String
           })
         })
         .then(r => r.json())
         .then(res => {
-          alert("✅ Data Valid! Berhasil diverifikasi dan otomatis dipindah ke Baris 2.");
-          modalVerifInstance.hide();
-          fetchData(); // Refresh ulang tabel untuk menghilangkan baris tersebut
+          if(res.status === "success") {
+             alert("✅ Data Valid! Berhasil diverifikasi dan otomatis dipindah ke Baris 2.");
+             modalVerifInstance.hide();
+             fetchData(); // Refresh ulang tabel untuk menghilangkan baris tersebut
+          } else {
+             alert("❌ Sistem Gagal Memindah: " + res.message);
+          }
         })
         .catch(err => {
-          alert("Gagal memindahkan data ke Baris 2 karena masalah jaringan.");
+          alert("Gagal memindahkan data ke Baris 2 karena masalah koneksi.");
         })
         .finally(() => {
           btnVerifAction.disabled = false;
@@ -355,14 +359,6 @@
         document.getElementById('inputModalVerif').value = "";
         document.getElementById('inputModalVerif').focus();
       }
-    }
-
-    function toggleCheckAll(source) {
-      let checkboxes = document.querySelectorAll('.row-check');
-      checkboxes.forEach(cb => {
-        let tr = cb.closest('tr');
-        if (tr.style.display !== 'none') cb.checked = source.checked;
-      });
     }
 
     // ============================================

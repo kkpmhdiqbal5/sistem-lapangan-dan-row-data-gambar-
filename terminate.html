@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tim Terminate - Sistem Lapangan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Pembaca barcode/QR dari kamera -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body { background-color: #0b132b; color: #e0e6ed; font-family: 'Segoe UI', sans-serif; padding-bottom: 85px; }
+    .top-bar { background-color: #1c2541; padding: 14px 20px; border-bottom: 1px solid #2a385b; }
+    .card-custom { background-color: #1c2541; border: 1px solid #2a385b; border-radius: 12px; }
+    .form-control-dark, .form-select-dark { background-color: #0b132b; border: 1px solid #3a506b; color: #ffffff; font-size: 0.85rem; }
+    .form-control-dark:focus, .form-select-dark:focus { background-color: #0b132b; color: #fff; border-color: #38bdf8; box-shadow: none; }
+    .form-control-dark::placeholder { color: #64748b; }
+
+    .bottom-app-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1c2541; border-top: 1px solid #2a385b; display: flex; justify-content: space-around; align-items: center; padding: 6px 0; z-index: 1000; height: 65px; }
+    .nav-link-mobile { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 0.7rem; font-weight: 600; flex: 1; }
+    .nav-link-mobile.active { color: #38bdf8; }
+    .nav-icon { font-size: 1.2rem; margin-bottom: 2px; }
+    .nav-link-center { position: relative; top: -12px; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+    .nav-center-circle { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5); border: 3px solid #0b132b; }
+    .nav-center-label { font-size: 0.7rem; font-weight: 700; color: #22c55e; margin-top: 2px; }
+
+    #overlayScan { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+    #readerScan { width: 100%; max-width: 420px; }
+    #prevFoto { max-height: 220px; object-fit: cover; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar d-flex justify-content-between align-items-center mb-3">
+    <div class="fw-bold fs-6 text-white">🚚 Tim Terminate</div>
+    <button onclick="logout()" class="btn btn-danger btn-sm fw-bold">🚪 Keluar</button>
+  </div>
+
+  <div class="container px-3">
+    <div class="small text-info mb-2">Admin: <b id="namaAdmin">-</b></div>
+
+    <div class="card-custom p-3 mb-3">
+      <label class="form-label small text-info fw-bold">JENIS LAPORAN</label>
+      <select id="jenis" class="form-select form-select-dark mb-3" onchange="ubahJenis()">
+        <option value="terminate">📦 Perangkat Terminate (sudah diambil)</option>
+        <option value="kunjungan">🏠 Client Tidak Ada di Rumah</option>
+        <option value="lanjut">✅ Lanjut Berlangganan</option>
+      </select>
+
+      <div class="mb-3">
+        <label id="lblFoto" class="form-label small text-info fw-bold">Foto Perangkat</label>
+        <input type="file" id="foto" accept="image/*" class="form-control form-control-dark" onchange="previewFoto(event)">
+        <img id="prevFoto" class="img-fluid rounded mt-2 d-none" alt="Pratinjau foto">
+      </div>
+
+      <div class="row g-2 mb-2">
+        <div class="col-12 col-md-6">
+          <label class="form-label small text-secondary fw-bold mb-1">Nama</label>
+          <input type="text" id="nama" class="form-control form-control-dark" placeholder="Nama pelanggan">
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label small text-secondary fw-bold mb-1">CID</label>
+          <input type="text" id="cid" inputmode="numeric" class="form-control form-control-dark" placeholder="Nomor pelanggan">
+        </div>
+      </div>
+
+      <div id="blokTerminate">
+        <div class="row g-2 mb-2">
+          <div class="col-12 col-md-6">
+            <label class="form-label small text-secondary fw-bold mb-1">ODP</label>
+            <input type="text" id="odp" class="form-control form-control-dark" placeholder="Terisi otomatis setelah Verif">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label small text-secondary fw-bold mb-1">POP</label>
+            <input type="text" id="pop" class="form-control form-control-dark" placeholder="Terisi otomatis setelah Verif">
+          </div>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-12 col-md-6">
+            <label class="form-label small text-secondary fw-bold mb-1">SN</label>
+            <div class="input-group">
+              <input type="text" id="sn" class="form-control form-control-dark" placeholder="Contoh: DF1D-2503024515">
+              <button class="btn btn-outline-info" type="button" onclick="mulaiScan('sn')">📷 Scan</button>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label small text-secondary fw-bold mb-1">P-SN</label>
+            <div class="input-group">
+              <input type="text" id="psn" class="form-control form-control-dark" placeholder="Contoh: CDTCAF267337">
+              <button class="btn btn-outline-info" type="button" onclick="mulaiScan('psn')">📷 Scan</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-text text-secondary mb-2">Cukup isi salah satu: SN atau P-SN.</div>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small text-secondary fw-bold mb-1">Keterangan</label>
+        <textarea id="ket" class="form-control form-control-dark" rows="3"></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small text-secondary fw-bold mb-1">Anggota Tim (pisahkan dengan koma)</label>
+        <input type="text" id="tim" class="form-control form-control-dark" placeholder="Contoh: Raffy, Adri">
+      </div>
+
+      <button onclick="verif()" id="btnVerif" class="btn btn-success w-100 fw-bold py-2">✔ Verif & Simpan</button>
+      <div id="hasil" class="mt-3 small"></div>
+    </div>
+
+    <div class="card-custom p-3">
+      <h6 class="text-info fw-bold">📋 Rekap Laporan Hari Ini (akun saya)</h6>
+      <button onclick="rekap()" id="btnRekap" class="btn btn-outline-info btn-sm w-100 fw-bold mb-2">Buat Rekap</button>
+      <textarea id="teksRekap" class="form-control form-control-dark font-monospace mb-2" rows="10" placeholder="Hasil rekap muncul di sini..."></textarea>
+      <div class="d-flex gap-2">
+        <button onclick="salinRekap()" class="btn btn-secondary btn-sm flex-fill fw-bold">Salin</button>
+        <button onclick="kirimWA()" class="btn btn-success btn-sm flex-fill fw-bold">Kirim ke WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layar scan barcode -->
+  <div id="overlayScan" class="d-none">
+    <div class="text-white fw-bold mb-2">Arahkan kamera ke barcode SN / P-SN</div>
+    <div id="readerScan"></div>
+    <button onclick="tutupScan()" class="btn btn-light fw-bold mt-3 px-4">Batal</button>
+  </div>
+
+  <div class="bottom-app-nav">
+    <a href="search.html" class="nav-link-mobile"><div class="nav-icon">🔍</div><span>Cari</span></a>
+    <a href="admin.html" class="nav-link-mobile"><div class="nav-icon">💻</div><span>Perangkat</span></a>
+    <a href="form.html" class="nav-link-center">
+      <div class="nav-center-circle">📝</div>
+      <span class="nav-center-label">Form Lapangan</span>
+    </a>
+    <a href="laporan.html" class="nav-link-mobile active"><div class="nav-icon">📊</div><span>Laporan</span></a>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsS4-LPktyuUKoC6Cf6TERV498wqvm31frvD7-W0gFhrCb9fkgwVBjAHeLrEeVMd25/exec";
+
+    const sess = localStorage.getItem("user_session");
+    if (!sess) { window.location.href = "login.html"; }
+
+    // Nama admin diambil dari sesi login (teks biasa atau JSON)
+    function ambilNamaAdmin() {
+      try {
+        const o = JSON.parse(sess);
+        if (o && typeof o === 'object') return o.nama || o.name || o.username || o.user || o.email || 'Admin';
+        return String(o);
+      } catch (e) { return String(sess); }
+    }
+    const ADMIN = ambilNamaAdmin();
+    document.getElementById('namaAdmin').textContent = ADMIN;
+
+    const KET_DEFAULT = {
+      terminate: "Perangkat sudah diambil dan port sudah dicabut. Sudah kembali ke gudang Perbaungan.",
+      kunjungan: "Client tidak ada dirumah",
+      lanjut: "Client masih mau lanjut berlangganan"
+    };
+    const LABEL_FOTO = {
+      terminate: "Foto Perangkat",
+      kunjungan: "Foto Rumah",
+      lanjut: "Foto Bukti (CID & nama)"
+    };
+    let ketTerakhir = "";
+
+    function ubahJenis() {
+      const j = document.getElementById('jenis').value;
+      document.getElementById('blokTerminate').classList.toggle('d-none', j !== 'terminate');
+      document.getElementById('lblFoto').textContent = LABEL_FOTO[j];
+      const ket = document.getElementById('ket');
+      if (!ket.value.trim() || ket.value === ketTerakhir) ket.value = KET_DEFAULT[j];
+      ketTerakhir = KET_DEFAULT[j];
+    }
+    ubahJenis();
+
+    function previewFoto(ev) {
+      const f = ev.target.files[0];
+      const img = document.getElementById('prevFoto');
+      if (!f) { img.classList.add('d-none'); return; }
+      img.src = URL.createObjectURL(f);
+      img.classList.remove('d-none');
+    }
+
+    // Perkecil foto sebelum dikirim agar upload cepat
+    function kompres(file, maxSide = 1000, q = 0.7) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          const r = Math.min(1, maxSide / Math.max(img.width, img.height));
+          const c = document.createElement('canvas');
+          c.width = Math.round(img.width * r);
+          c.height = Math.round(img.height * r);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          resolve(c.toDataURL('image/jpeg', q));
+        };
+        img.onerror = () => reject(new Error("Foto tidak bisa dibaca"));
+        img.src = url;
+      });
+    }
+
+    // ===== Scan barcode =====
+    let scanner = null, scanTarget = null;
+    function mulaiScan(targetId) {
+      scanTarget = targetId;
+      document.getElementById('overlayScan').classList.remove('d-none');
+      const F = Html5QrcodeSupportedFormats;
+      scanner = new Html5Qrcode("readerScan", { formatsToSupport: [F.CODE_128, F.CODE_39, F.QR_CODE, F.EAN_13], verbose: false });
+      scanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 280, height: 140 } },
+        (teks) => { document.getElementById(scanTarget).value = teks.trim().toUpperCase(); tutupScan(); },
+        () => {}
+      ).catch(err => { alert("Kamera tidak bisa dibuka: " + err); tutupScan(); });
+    }
+    function tutupScan() {
+      const selesai = () => { document.getElementById('overlayScan').classList.add('d-none'); scanner = null; };
+      if (scanner) { scanner.stop().then(() => scanner.clear()).catch(() => {}).finally(selesai); }
+      else selesai();
+    }
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // ===== Verif & Simpan =====
+    async function verif() {
+      const jenis = document.getElementById('jenis').value;
+      const g = id => document.getElementById(id).value.trim();
+      const file = document.getElementById('foto').files[0];
+      const sn = g('sn').toUpperCase(), psn = g('psn').toUpperCase();
+
+      if (!file) { alert("Foto wajib diisi."); return; }
+      if (jenis === 'terminate' && !sn && !psn) { alert("Isi atau scan SN / P-SN dulu."); return; }
+      if (jenis !== 'terminate' && (!g('nama') || !g('cid'))) { alert("Nama dan CID wajib diisi."); return; }
+
+      const btn = document.getElementById('btnVerif');
+      const hasil = document.getElementById('hasil');
+      btn.disabled = true; btn.textContent = "Memproses...";
+      hasil.innerHTML = "";
+
+      try {
+        const foto = await kompres(file);
+        const payload = {
+          action: "terminateSimpan", jenis, admin: ADMIN,
+          tim: g('tim') || ADMIN,
+          nama: g('nama'), cid: g('cid'), odp: g('odp'), pop: g('pop'),
+          sn: jenis === 'terminate' ? sn : '', psn: jenis === 'terminate' ? psn : '',
+          ket: g('ket') || KET_DEFAULT[jenis],
+          foto
+        };
+        const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) }).then(r => r.json());
+        if (res.status === "success") {
+          const d = res.data || {};
+          hasil.innerHTML = '<div class="alert alert-success py-2 mb-0">' + esc(res.message) +
+            '<br>Nama: ' + esc(d.nama) + ' | CID: ' + esc(d.cid) +
+            (d.odp ? '<br>ODP: ' + esc(d.odp) : '') + (d.pop ? ' | POP: ' + esc(d.pop) : '') +
+            (d.sn ? '<br>SN: ' + esc(d.sn) : '') + (d.psn ? ' | P-SN: ' + esc(d.psn) : '') + '</div>';
+          ['foto', 'nama', 'cid', 'odp', 'pop', 'sn', 'psn'].forEach(id => document.getElementById(id).value = '');
+          document.getElementById('prevFoto').classList.add('d-none');
+          document.getElementById('ket').value = KET_DEFAULT[jenis];
+        } else {
+          hasil.innerHTML = '<div class="alert alert-danger py-2 mb-0">' + esc(res.message) + '</div>';
+        }
+      } catch (err) {
+        hasil.innerHTML = '<div class="alert alert-danger py-2 mb-0">Gagal: ' + esc(err.message) + '</div>';
+      } finally {
+        btn.disabled = false; btn.textContent = "✔ Verif & Simpan";
+      }
+    }
+
+    // ===== Rekap laporan =====
+    function rekap() {
+      const btn = document.getElementById('btnRekap');
+      btn.disabled = true; btn.textContent = "Menyusun rekap...";
+      fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "terminateRekap", admin: ADMIN, tanggal: new Date().toLocaleDateString('en-CA') }) })
+        .then(r => r.json())
+        .then(res => {
+          if (res.status === "success") document.getElementById('teksRekap').value = res.teks;
+          else alert(res.message);
+        })
+        .catch(() => alert("Gagal terhubung ke server."))
+        .finally(() => { btn.disabled = false; btn.textContent = "Buat Rekap"; });
+    }
+    function salinRekap() {
+      const t = document.getElementById('teksRekap').value;
+      if (!t) return;
+      navigator.clipboard.writeText(t).then(() => alert("Rekap disalin."));
+    }
+    function kirimWA() {
+      const t = document.getElementById('teksRekap').value;
+      if (!t) { alert("Buat rekap dulu."); return; }
+      window.open("https://wa.me/?text=" + encodeURIComponent(t), "_blank");
+    }
+
+    function logout() {
+      localStorage.removeItem("user_session");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
